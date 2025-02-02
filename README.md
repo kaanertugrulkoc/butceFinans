@@ -1,4 +1,4 @@
-# bitirme_projesi_app
+# Bitirme Projesi App
 
 Altaylardan Tuna'ya
 Düştük kara sevdaya,
