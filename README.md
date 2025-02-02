@@ -1,4 +1,4 @@
-# Bitirme Projesi App
+Bitirme Projesi App
 
 
 # Altaylardan Tuna'ya
