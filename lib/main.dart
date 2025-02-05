@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
           title: const Text('Material App Bar'),
         ),
         body: const Center(
-          child: Text(''),
+          child: Text('  '),
         ),
       ),
     );
