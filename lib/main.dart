@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
           title: const Text('Material'),
         ),
         body: const Center(
-          child: Text('  '),
+          child: Text(''),
         ),
       ),
     );
