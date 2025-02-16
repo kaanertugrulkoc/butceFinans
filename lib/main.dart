@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
       title: 'Material',
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Material!!!'),
+          title: const Text('Material'),
         ),
         body: const Center(
           child: Text(''),
