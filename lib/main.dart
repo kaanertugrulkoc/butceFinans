@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
       title: 'Material',
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('-BÜTÇE-'),
+          title: const Text('--BÜTÇE--'),
         ),
         body: const Center(
           child: Text(''),
