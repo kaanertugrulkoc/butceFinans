@@ -7,14 +7,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Bütçemiz',
+      debugShowCheckedModeBanner: false,
+      title: 'Bütçe',
       home: Scaffold(
         appBar: AppBar(
-          title: Text('BÜTÇE'),
+          title: Center(child: Text('BÜTÇE')),
         ),
         body: Center(
           child: Container(
-            child: Text('Anasayfa'),
+            child: Text('Anasayfa!'),
           ),
         ),
       ),
