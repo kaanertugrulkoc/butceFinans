@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
           title: Center(child: const Text('BÜTÇE')),
         ),
         body: const Center(
-          child: Text(''),
+          child: Text('anasayfa !!'),
         ),
       ),
     );
