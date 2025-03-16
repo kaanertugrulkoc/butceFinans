@@ -25,6 +25,9 @@ class MyApp extends StatelessWidget {
                 backgroundImage: NetworkImage(url),
 
               ),
+              SizedBox(
+                height: 9,
+              ),
               Text('Selahattin KOÇ',
               style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),
               )
