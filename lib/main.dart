@@ -25,7 +25,9 @@ class MyApp extends StatelessWidget {
                 backgroundImage: NetworkImage(url),
 
               ),
-              Text('Selahattin KOÇ')
+              Text('Selahattin KOÇ',
+              style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),
+              )
 
             ],
           ),
