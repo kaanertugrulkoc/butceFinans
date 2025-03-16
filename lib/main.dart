@@ -1,4 +1,4 @@
-import 'package:bitirme_projesi_app/buttonTurleri.dart';
+import 'package:bitirme_projesi_app/widgets/buttonTurleri.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
