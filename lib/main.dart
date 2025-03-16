@@ -6,10 +6,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'B Ü T Ç E',
       home: Scaffold(
         appBar: AppBar(
-          title: Text('BitirmeProjem BÜTÇE Uygulaması'),
+          centerTitle: true,
+          title: Text('Hakkımda'),
         ),
         body: Center(
           child: Container(
