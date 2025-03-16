@@ -12,7 +12,10 @@ class buttonTur extends StatelessWidget {
         ),
         body: Center(
           child: Column(children: [
-            TextButton(onPressed: () {}, child: Text("Tıkla")),
+            TextButton(onPressed: () {}, child: Text("Alarm Kur")),
+            TextButton.icon(onPressed: () {},icon:Icon(Icons.access_alarm) ,label:  Text("Alarm Kur")),
+            ElevatedButton(onPressed: (){}, child:Text('Alarm Kur')),
+            ElevatedButton.icon(onPressed: (){}, icon:Icon(Icons.access_alarm) ,label:Text('Alarm Kur'))
           ]),
         ),
       ),
