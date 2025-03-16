@@ -28,6 +28,10 @@ class MyApp extends StatelessWidget {
                 Text(
                   'Selahattin KOÇ',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  'Software Developer',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 )
               ],
             ),
