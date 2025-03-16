@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
                 ),
                 Text(
                   'Software Developer',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold,color: Colors.grey),
                 )
               ],
             ),
