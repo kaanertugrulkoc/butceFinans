@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
         backgroundColor: Colors.blueGrey.shade100,
         appBar: AppBar(
           backgroundColor: Colors.blueGrey.shade200,
-          centerTitle: true,
+         // centerTitle: true,
           title: Text('Hakkımda'),
         ),
         body: Center(
@@ -75,6 +75,7 @@ class MyApp extends StatelessWidget {
                 ],
               )),
               Card(
+                color: Colors.blueGrey.shade50,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
