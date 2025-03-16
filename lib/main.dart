@@ -38,6 +38,7 @@ class MyApp extends StatelessWidget {
                     color: Colors.grey),
               ),
               Card(
+                  color: Colors.blueGrey.shade50,
                   child: Column(
                 children: <Widget>[
                   Padding(
@@ -46,30 +47,47 @@ class MyApp extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
-                  Row(
-                    children: [
-                      Expanded(
-                          child: Column(
-                        children: [Text('1.5K', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
-                        Text('Takipçi')
-                        ],
-                      )),
-                      Expanded(
-                          child: Column(
-                            children: [Text('0', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
-                              Text('Takip')
-                            ],
-                          )),
-                      Expanded(
-                          child: Column(
-                            children: [Text('37', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
-                              Text('Paylaşım')
-                            ],
-                          ))
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child: Column(
+                          children: [Text('1.5K', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                          Text('Takipçi')
+                          ],
+                        )),
+                        Expanded(
+                            child: Column(
+                              children: [Text('0', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                                Text('Takip')
+                              ],
+                            )),
+                        Expanded(
+                            child: Column(
+                              children: [Text('37', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                                Text('Gönderi')
+                              ],
+                            ))
+                      ],
+                    ),
                   )
                 ],
               )),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text('Hakkımda',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)),
+                      Text('🇹🇷',style: TextStyle(fontSize:37)),
+                      Text('🦂10 PureLove 11🦂',style: TextStyle(fontSize:17)),
+                      Text('Game-Mobile-Desktop Developer / Cyber Security',style: TextStyle(fontSize:17)),
+                      Text('visual effects(vfx) / IoT / hobby diy elektronic',style: TextStyle(fontSize:17))
+                    ],
+                  ),
+                ),
+              )
             ]),
           ),
         ),
