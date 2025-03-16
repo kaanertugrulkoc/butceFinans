@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-
-  final url='https://avatars.githubusercontent.com/u/25131682?v=4';
+  final url = 'https://avatars.githubusercontent.com/u/25131682?v=4';
 
   @override
   Widget build(BuildContext context) {
@@ -17,25 +16,24 @@ class MyApp extends StatelessWidget {
           title: Text('Hakkımda'),
         ),
         body: Center(
-          child: Column(
-            children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundColor: Colors.transparent,
-                backgroundImage: NetworkImage(url),
-
-              ),
-              SizedBox(
-                height: 9,
-              ),
-              Text('Selahattin KOÇ',
-              style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),
-              )
-
-            ],
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                CircleAvatar(
+                  radius: 50,
+                  backgroundColor: Colors.transparent,
+                  backgroundImage: NetworkImage(url),
+                ),
+                Text(
+                  'Selahattin KOÇ',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
           ),
         ),
-          ),
+      ),
     );
   }
 }
