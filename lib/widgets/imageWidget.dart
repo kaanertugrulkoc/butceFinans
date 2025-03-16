@@ -18,7 +18,7 @@ class imagewidget_ extends StatelessWidget {
             child: Column(
               children: [
                 Image.asset('assets/images/img.jpg'),
-                Text('deneme')
+                Text('Resim')
 
               ],
             ),
