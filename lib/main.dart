@@ -74,6 +74,9 @@ class MyApp extends StatelessWidget {
                   )
                 ],
               )),
+              SizedBox(
+                height: 8,
+              ),
               Card(
                 color: Colors.blueGrey.shade50,
                 child: Padding(
