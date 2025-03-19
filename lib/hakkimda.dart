@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
                 backgroundImage: NetworkImage(url),
               ),
               Text(
-                'Selahattin KOÇ',
+                'KaanErtugrulKoc',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               Text(
