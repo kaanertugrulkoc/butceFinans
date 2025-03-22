@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'https://www.instagram.com/kaanertugrulkocofficial',
+                          'https://www.instagram.com/kaanertugrulkocofficial / yayında değil !',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
