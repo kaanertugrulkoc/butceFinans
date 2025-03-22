@@ -15,7 +15,9 @@ class imagewidget_ extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
-                children: [Image.asset('assets/images/img.jpg'), Text('Resim',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 19),)],
+                children: [
+                  Text('Galeri'),
+                  Image.asset('assets/images/img.jpg'), Text('Resim',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 19),)],
               ),
             ),
           )),
