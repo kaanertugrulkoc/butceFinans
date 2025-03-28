@@ -90,7 +90,7 @@ class MyApp extends StatelessWidget {
                           style: TextStyle(fontSize: 17)),
                       Text('Game-Mobile-Desktop Developer / Cyber Security',
                           style: TextStyle(fontSize: 17)),
-                      Text('visual effects(vfx) / IoT / hobby diy elektronic',
+                      Text('Visual Effects(vfx) / IoT / Hobby Diy Elektronic',
                           style: TextStyle(fontSize: 17))
                     ],
                   ),
