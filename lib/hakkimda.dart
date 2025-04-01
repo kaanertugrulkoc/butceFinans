@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
                 backgroundImage: NetworkImage(url),
               ),
               Text(
-                'KaanErtugrulKoc',
+                'Selahattin KOÇ',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               Text(
@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'https://www.youtube.com/watch?v=CYDYz_vcbUQ',
+                          'https://github.com/kaanertugrulkoc'
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
