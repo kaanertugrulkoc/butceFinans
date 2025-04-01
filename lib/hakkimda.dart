@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'https://github.com/kaanertugrulkoc'
+                          'https://github.com/kaanertugrulkoc',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
