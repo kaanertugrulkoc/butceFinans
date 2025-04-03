@@ -9,7 +9,7 @@ class StorageService extends GetxController {
     return _preferences;
   }
 
-  Future<bool> setValue<T>(String key, T Value) async {
+  Future<bool> setValue<T>(String key, T value) async {
     try {
       if (value is String) {
         return await _preferences.setString(key, value);
@@ -27,6 +27,21 @@ class StorageService extends GetxController {
     } catch (e) {
       print('Veri Eklenirken Hata oluştu');
       return false;
+    }
+  }
+
+//getValue<String>("token");
+  T? getValue<T>(String key) {
+    if (T == String) {
+      return _preferences.getString(key) as T;
+    } else if (T == int) {
+      return _preferences.getInt(key) as T;
+    } else if (T == double) {
+      return _preferences.getDouble(key) as T;
+    } else if (T == bool) {
+      return _preferences.getBool(key) as T;
+    } else if (T == List<String>) {
+      return _preferences.getStringList(key) as T;
     }
   }
 }
