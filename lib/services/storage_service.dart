@@ -14,13 +14,6 @@ class StorageService extends GetxController {
       if (value is String) {
         return await _preferences.setString(key, value);
       }
-    }
+    } catch (e) {}
   }
-
-  catch
-
-  (
-
-  e) {}
 }
-
