@@ -1,6 +1,10 @@
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+abstract class StorageKeys {
+  static const String UserToken = "user_token";
+}
+
 class StorageService extends GetxController {
   late final SharedPreferences _preferences;
 
@@ -86,6 +90,4 @@ class StorageService extends GetxController {
     }
     return map;
   }
-
-
 }
