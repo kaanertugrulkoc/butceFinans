@@ -33,5 +33,6 @@ class ApiService extends GetxService {
           }
           return handler.next(error);
         }));
+    return this;
   }
 }
