@@ -5,6 +5,7 @@ class StorageService extends GetxController {
   late final SharedPreferences _preferences;
 
   Future<SharedPreferences> init() async {
-
+    _preferences = await SharedPreferences.getInstance();
+    return _preferences;
   }
 }
