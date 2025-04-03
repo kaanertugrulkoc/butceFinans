@@ -11,7 +11,7 @@ class ApiService extends GetxService {
   final StorageService _storageService = Get.find<StorageService>();
   late Dio _dio;
 
-  Future<ApiService> init() async {
+  Future<ApiService>init() async {
     _dio = Dio(BaseOptions(
         baseUrl: ApiConstants.baseurl,
         connectTimeout: Duration(seconds: 10),
