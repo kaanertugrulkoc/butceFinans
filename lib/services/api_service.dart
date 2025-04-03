@@ -26,6 +26,10 @@ class ApiService extends GetxService {
           return handler.next(options);
 
         },
-        onError: (response, handler) async {}));
+        onError: (error, handler) async {
+          if(error.response?.statusCode==401){
+            await _storageService.remove(StorageKeys.UserToken);
+          }
+        }));
   }
 }
