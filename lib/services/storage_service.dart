@@ -24,6 +24,9 @@ class StorageService extends GetxController {
       } else {
         throw ArgumentError('Desteklenmeyen Veri Türü');
       }
-    } catch (e) {}
+    } catch (e) {
+      print('Veri Eklenirken Hata oluştu');
+      return false;
+    }
   }
 }
