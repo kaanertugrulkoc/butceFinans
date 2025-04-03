@@ -17,10 +17,16 @@ class ApiService extends GetxService {
         receiveTimeout: Duration(seconds: 10),
         contentType: "application/json"));
 
-    _dio.interceptors
-        .add(InterceptorsWrapper(onRequest: (options, handler) async {
+    _dio.interceptors.add(InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final token= _storageService.getValue<String>(StorageKeys.UserToken);
 
-    }
+
+        },
+      onError: (response, handler) async{
+
+      }
+
     ));
   }
 }
