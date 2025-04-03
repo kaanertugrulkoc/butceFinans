@@ -60,4 +60,13 @@ class StorageService extends GetxController {
       return false;
     }
   }
+
+  Future<bool> clear() async {
+    try {
+      return await _preferences.clear();
+    } catch (e) {
+      print("Değer temizlenirken Hata oluştu $e");
+      return false;
+    }
+  }
 }
