@@ -69,4 +69,8 @@ class StorageService extends GetxController {
       return false;
     }
   }
+
+  bool hasKey(String key) {
+    return _preferences.containsKey(key);
+  }
 }
