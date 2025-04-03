@@ -8,4 +8,8 @@ class StorageService extends GetxController {
     _preferences = await SharedPreferences.getInstance();
     return _preferences;
   }
+
+  Future<void> setValue<T>(String key, T Value) async {
+    try {} catch (e) {}
+  }
 }
