@@ -19,6 +19,8 @@ class StorageService extends GetxController {
         return await _preferences.setDouble(key, value);
       } else if (value is bool) {
         return await _preferences.setBool(key, value);
+      } else if (value is List<String>) {
+        return await _preferences.setStringList(key, value);
       }
     } catch (e) {}
   }
