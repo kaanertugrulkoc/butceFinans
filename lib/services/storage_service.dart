@@ -73,4 +73,17 @@ class StorageService extends GetxController {
   bool hasKey(String key) {
     return _preferences.containsKey(key);
   }
+
+  Object? getValueOrDefault<T>(String key, T defaultValue) {
+    return getValue<T>(key) ?? defaultValue;
+  }
+
+  Future<Map<String, dynamic>> getAllValues() async {
+    final keys = _preferences.getKeys();
+    final map = <String, dynamic>{};
+    for (var key in keys) {
+      map[key] = _preferences.getKeys();
+    }
+    return map;
+  }
 }
