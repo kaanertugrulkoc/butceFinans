@@ -30,7 +30,7 @@ class StorageService extends GetxController {
     }
   }
 
-//getValue<String>("token");
+  //getValue<String>("token");
   Future<T?> getValue<T>(String key) async {
     try {
       if (T == String) {
@@ -49,6 +49,15 @@ class StorageService extends GetxController {
     } catch (e) {
       print('Veri Eklenirken Hata oluştu');
       return null;
+    }
+  }
+
+  Future<bool> remove(String key) async {
+    try {
+      return await _preferences.remove(key);
+    } catch (e) {
+      print("Keyi Verilen Değer Silinirken Hata oluştu $e");
+      return false;
     }
   }
 }
