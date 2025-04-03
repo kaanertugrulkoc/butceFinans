@@ -10,6 +10,17 @@ class StorageService extends GetxController {
   }
 
   Future<void> setValue<T>(String key, T Value) async {
-    try {} catch (e) {}
+    try {
+      if (value is String) {
+        return await _preferences.setString(key, value);
+      }
+    }
   }
+
+  catch
+
+  (
+
+  e) {}
 }
+
