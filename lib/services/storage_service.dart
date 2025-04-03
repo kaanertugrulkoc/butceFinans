@@ -21,6 +21,8 @@ class StorageService extends GetxController {
         return await _preferences.setBool(key, value);
       } else if (value is List<String>) {
         return await _preferences.setStringList(key, value);
+      } else {
+        throw ArgumentError('Desteklenmeyen Veri Türü');
       }
     } catch (e) {}
   }
