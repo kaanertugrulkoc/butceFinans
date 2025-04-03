@@ -20,8 +20,11 @@ class ApiService extends GetxService {
     _dio.interceptors.add(InterceptorsWrapper(
         onRequest: (options, handler) async {
           final token = _storageService.getValue<String>(StorageKeys.UserToken);
-          if (token != null) {}
-          options.headers['authorization'] = 'Bearer $token';
+          if (token != null) {
+            options.headers['authorization'] = 'Bearer $token';
+          }
+          return handler.next(options);
+
         },
         onError: (response, handler) async {}));
   }
