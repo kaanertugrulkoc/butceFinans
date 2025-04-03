@@ -31,17 +31,36 @@ class StorageService extends GetxController {
   }
 
 //getValue<String>("token");
-  T? getValue<T>(String key) {
-    if (T == String) {
-      return _preferences.getString(key) as T;
-    } else if (T == int) {
-      return _preferences.getInt(key) as T;
-    } else if (T == double) {
-      return _preferences.getDouble(key) as T;
-    } else if (T == bool) {
-      return _preferences.getBool(key) as T;
-    } else if (T == List<String>) {
-      return _preferences.getStringList(key) as T;
-    }
+  T? getValue<T>(String key)
+
+  try {
+  if (T == String) {
+  return _preferences.getString(key) as T;
+  } else if (T == int) {
+  return _preferences.getInt(key) as T;
+  } else if (T == double) {
+  return _preferences.getDouble(key) as T;
+  } else if (T == bool) {
+  return _preferences.getBool(key) as T;
+  } else if (T == List<String>) {
+  return _preferences.getStringList(key) as T;
   }
+
+  } else {
+  throw ArgumentError('Desteklenmeyen Veri Türü');
+  }
+} catch (
+e) {
+print('Veri Eklenirken Hata oluştu');
+return false;
 }
+}
+}
+
+
+
+
+
+
+
+
