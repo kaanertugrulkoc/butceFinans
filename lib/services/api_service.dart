@@ -62,4 +62,32 @@ class ApiService extends GetxService {
       rethrow;
     }
   }
+
+  Future<Response> put(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+  }) async {
+    try {
+      return await _dio.put(path,
+          queryParameters: queryParameters, options: options);
+    } catch (e) {
+      print("Dio put error $e");
+      rethrow;
+    }
+  }
+
+  Future<Response> delete(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+  }) async {
+    try {
+      return await _dio.delete(path,
+          queryParameters: queryParameters, options: options);
+    } catch (e) {
+      print("Dio delete error $e");
+      rethrow;
+    }
+  }
 }
