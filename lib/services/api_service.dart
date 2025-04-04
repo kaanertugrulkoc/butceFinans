@@ -1,6 +1,7 @@
 import 'package:bitirme_projesi_app/services/storage_service.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
+import 'package:dio/src/response.dart';
 
 abstract class ApiConstants {
   static const baseurl = "";
@@ -43,6 +44,22 @@ class ApiService extends GetxService {
           queryParameters: queryParameters, options: options);
     } catch (e) {
       print("Dio get error $e");
+      rethrow;
+    }
+  }
+
+  Future<Response> post(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+  }) async {
+    try {
+      return await _dio.post(path,
+          data: data, queryParameters: queryParameters, options: options);
+    } catch (e) {
+      print("Dio post error $e");
+      rethrow;
     }
   }
 }
