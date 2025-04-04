@@ -1,6 +1,7 @@
 import 'package:bitirme_projesi_app/services/storage_service.dart';
 import 'package:dio/dio.dart';
-import 'package:get/get.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
+import 'package:get/instance_manager.dart';
 
 abstract class ApiConstants {
   static const baseurl = "";

@@ -6,6 +6,7 @@ class SplashController extends BaseController {
   @override
   void onReady() {
     super.onReady();
-    Get.find<StorageService>().getAllValues();
+    var map = Get.find<StorageService>().getAllValues();
+    print(map);
   }
 }
