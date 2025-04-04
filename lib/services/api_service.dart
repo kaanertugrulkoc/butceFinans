@@ -7,10 +7,11 @@ abstract class ApiConstants {
 }
 
 class ApiService extends GetxService {
-  final StorageService _storageService = Get.find<StorageService>();
+  late StorageService _storageService;
   late Dio _dio;
 
   Future<ApiService> init() async {
+    _storageService = Get.find<StorageService>();
     _dio = Dio(BaseOptions(
         baseUrl: ApiConstants.baseurl,
         connectTimeout: Duration(seconds: 10),
