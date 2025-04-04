@@ -6,7 +6,17 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child:Text('LoginPage'),),
+      body: Center(
+        child: Row(
+          children: [
+            Text('LoginPage'),
+            ElevatedButton(
+              onPressed: () {},
+              child: Text('Google ile Giriş Yapın'),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
