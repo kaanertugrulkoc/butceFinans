@@ -1,6 +1,7 @@
 import 'package:bitirme_projesi_app/services/storage_service.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
+import 'package:get/get_instance/get_instance.dart';
 
 
 abstract class ApiConstants {
