@@ -3,10 +3,15 @@ import 'package:bitirme_projesi_app/services/storage_service.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class AuthService extends GetxService{
-
+class AuthService extends GetxService {
   late final StorageService _storageService;
   late final ApiService _apiService;
   late final GoogleSignIn _googleSignIn;
 
+  Future<AuthService> init() async {
+    _storageService = Get.find<StorageService>();
+    _apiService = Get.find<ApiService>();
+    _googleSignIn = GoogleSignIn();
+    return this;
+  }
 }
