@@ -35,12 +35,9 @@ class ApiService extends GetxService {
 
   Future<Response> get(String path,
   {
-    Map<String,dynamic>?
-  }
-
-
-
-      ){
+    Map<String,dynamic>?queryParameters,
+    Options? options,
+  } )async{
 
   }
 
