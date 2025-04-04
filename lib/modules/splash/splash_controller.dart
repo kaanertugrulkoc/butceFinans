@@ -35,5 +35,6 @@ class SplashController extends BaseController {
 
   Future<void> checkTokenAndRedirect() async {
     Get.offAllNamed(AppRouters.LOGIN);
+
   }
 }
