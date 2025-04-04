@@ -1,3 +1,5 @@
+import 'package:bitirme_projesi_app/modules/splash/splash_bindings.dart';
+import 'package:bitirme_projesi_app/modules/splash/splash_page.dart';
 import 'package:get/get.dart';
 
 abstract class AppRouters{
@@ -10,6 +12,6 @@ abstract class AppRouters{
 
 class AppPages{
   static final pages =<GetPage>[
-    GetPage(name: name, page: page)
+    GetPage(name: AppRouters.SPLASH, page: ()=>SplashPage(),binding: SplashBindings())
   ];
 }
