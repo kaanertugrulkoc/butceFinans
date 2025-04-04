@@ -33,13 +33,16 @@ class ApiService extends GetxService {
     return this;
   }
 
-  Future<Response> get(String path,
-  {
-    Map<String,dynamic>?queryParameters,
+  Future<Response> get(
+    String path, {
+    Map<String, dynamic>? queryParameters,
     Options? options,
-  } )async{
-
+  }) async {
+    try {
+      return await _dio.get(path,
+          queryParameters: queryParameters, options: options);
+    } catch (e) {
+      print("Dio get error $e");
+    }
   }
-
-
 }
