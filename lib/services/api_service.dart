@@ -32,4 +32,17 @@ class ApiService extends GetxService {
     }));
     return this;
   }
+
+  Future<Response> get(String path,
+  {
+    Map<String,dynamic>?
+  }
+
+
+
+      ){
+
+  }
+
+
 }
