@@ -17,8 +17,11 @@ class AuthService extends GetxService {
 
   signInWithGoogle() async {
     try {
-
-
+      await _googleSignIn.signOut();
+      final GoogleSignInAccount? _googleUser = await _googleSignIn.signIn();
+      if (_googleUser == null) return null;
+      final GoogleSignInAuthentication _googleAuthentication =
+          await _googleUser.authentication;
     } catch (e) {
       print(e);
     }
