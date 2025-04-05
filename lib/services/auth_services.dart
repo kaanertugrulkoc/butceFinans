@@ -23,6 +23,8 @@ class AuthService extends GetxService {
       final GoogleSignInAuthentication _googleAuthentication =
           await _googleUser.authentication;
       _googleAuthentication.idToken;
+      print('google user ${_googleUser.toString()}');
+      print('goole auth : ${_googleAuthentication.idToken}');
     } catch (e) {
       print(e);
     }
