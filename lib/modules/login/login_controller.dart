@@ -1,5 +1,6 @@
 import 'package:bitirme_projesi_app/core/base_controller.dart';
 import 'package:bitirme_projesi_app/services/auth_services.dart';
+import 'package:get/get.dart';
 
 class LoginController extends BaseController {
   late final AuthService _authService;
