@@ -13,7 +13,9 @@ class LoginPage extends GetView<LoginController> {
           children: [
             Text('LoginPage'),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () async {
+                await controller.googleIleGirisYap();
+              },
               child: Text('Google ile Giriş Yapın'),
             )
           ],

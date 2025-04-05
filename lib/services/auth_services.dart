@@ -14,4 +14,13 @@ class AuthService extends GetxService {
     _googleSignIn = GoogleSignIn();
     return this;
   }
+
+  signInWithGoogle() async {
+    try {
+
+
+    } catch (e) {
+      print(e);
+    }
+  }
 }
