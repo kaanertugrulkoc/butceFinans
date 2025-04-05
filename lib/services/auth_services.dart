@@ -22,6 +22,7 @@ class AuthService extends GetxService {
       if (_googleUser == null) return null;
       final GoogleSignInAuthentication _googleAuthentication =
           await _googleUser.authentication;
+      _googleAuthentication.idToken;
     } catch (e) {
       print(e);
     }
