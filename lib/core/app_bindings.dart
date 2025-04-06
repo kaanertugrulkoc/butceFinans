@@ -20,6 +20,7 @@ class AppBindings extends Bindings {
       final service = AuthService();
       await service.init();
       return service;
+
     });
   }
 }
