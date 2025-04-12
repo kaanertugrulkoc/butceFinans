@@ -8,30 +8,34 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<HomeController>();
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ana Sayfa'),
-      ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildSummaryCard(controller),
-              const SizedBox(height: 24),
-              _buildPieChart(controller),
-              const SizedBox(height: 24),
-              _buildCategoryList(controller),
-            ],
+    return GetBuilder<HomeController>(
+      init: HomeController(),
+      builder: (controller) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Ana Sayfa'),
           ),
+          body: Obx(() {
+            if (controller.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSummaryCard(controller),
+                  const SizedBox(height: 24),
+                  _buildPieChart(controller),
+                  const SizedBox(height: 24),
+                  _buildCategoryList(controller),
+                ],
+              ),
+            );
+          }),
         );
-      }),
+      },
     );
   }
 
