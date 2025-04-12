@@ -82,7 +82,16 @@ class CategoryAnalysisPage extends StatelessWidget {
       ]),
       builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Güncel kurlar yükleniyor...'),
+              ],
+            ),
+          );
         }
 
         if (snapshot.hasError) {
@@ -98,12 +107,12 @@ class CategoryAnalysisPage extends StatelessWidget {
                   style: const TextStyle(color: Colors.red),
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
+                ElevatedButton.icon(
                   onPressed: () {
-                    // Sayfayı yeniden yükle
                     Get.off(() => CategoryAnalysisPage());
                   },
-                  child: const Text('Tekrar Dene'),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Tekrar Dene'),
                 ),
               ],
             ),
@@ -115,27 +124,132 @@ class CategoryAnalysisPage extends StatelessWidget {
 
         return RefreshIndicator(
           onRefresh: () async {
-            // Sayfayı yeniden yükle
             Get.off(() => CategoryAnalysisPage());
           },
           child: ListView(
+            padding: const EdgeInsets.all(16.0),
             children: [
-              ListTile(
-                title: const Text('Dolar (USD)'),
-                trailing: Text('₺${currencyRates['usd'].toStringAsFixed(2)}'),
+              _buildInfoCard(
+                'Güncel Döviz ve Altın Kurları',
+                'Son güncelleme: ${DateTime.now().hour}:${DateTime.now().minute}',
+                Icons.access_time,
+                Colors.blue,
               ),
-              ListTile(
-                title: const Text('Euro (EUR)'),
-                trailing: Text('₺${currencyRates['eur'].toStringAsFixed(2)}'),
+              const SizedBox(height: 16),
+              _buildCurrencyCard(
+                'Amerikan Doları',
+                'USD',
+                currencyRates['usd'],
+                Icons.attach_money,
+                Colors.green,
               ),
-              ListTile(
-                title: const Text('Gram Altın'),
-                trailing: Text('₺${goldPrice.toStringAsFixed(2)}'),
+              const SizedBox(height: 16),
+              _buildCurrencyCard(
+                'Euro',
+                'EUR',
+                currencyRates['eur'],
+                Icons.euro,
+                Colors.blue,
+              ),
+              const SizedBox(height: 16),
+              _buildCurrencyCard(
+                'Gram Altın',
+                'GAU',
+                goldPrice,
+                Icons.monetization_on,
+                Colors.amber,
               ),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildInfoCard(
+      String title, String subtitle, IconData icon, Color color) {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Icon(icon, size: 32, color: color),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCurrencyCard(
+    String name,
+    String code,
+    double value,
+    IconData icon,
+    Color color,
+  ) {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color, size: 32),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    code,
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              '₺${value.toStringAsFixed(2)}',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
