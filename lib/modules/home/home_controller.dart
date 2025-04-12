@@ -15,6 +15,14 @@ class HomeController extends GetxController {
     loadData();
   }
 
+  @override
+  void onReady() {
+    super.onReady();
+    // Her 5 saniyede bir verileri güncelle
+    ever(totalIncome, (_) => loadData());
+    ever(totalExpense, (_) => loadData());
+  }
+
   Future<void> loadData() async {
     isLoading.value = true;
     try {
@@ -24,5 +32,15 @@ class HomeController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  // Gelir eklendiğinde çağrılacak
+  void onIncomeAdded() {
+    loadData();
+  }
+
+  // Gider eklendiğinde çağrılacak
+  void onExpenseAdded() {
+    loadData();
   }
 }

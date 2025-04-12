@@ -50,12 +50,27 @@ class DatabaseService {
   // Gelir işlemleri
   Future<int> insertIncome(Map<String, dynamic> income) async {
     Database db = await database;
-    return await db.insert('incomes', income);
+    return await db.insert('incomes', {
+      'amount': income['amount'],
+      'description': income['description'] ?? '',
+      'date': income['date'],
+    });
   }
 
   Future<List<Map<String, dynamic>>> getIncomes() async {
     Database db = await database;
-    return await db.query('incomes', orderBy: 'date DESC');
+    final List<Map<String, dynamic>> maps = await db.query(
+      'incomes',
+      orderBy: 'date DESC',
+    );
+    return List.generate(maps.length, (i) {
+      return {
+        'id': maps[i]['id'],
+        'amount': maps[i]['amount'] as double,
+        'description': maps[i]['description'] as String,
+        'date': maps[i]['date'] as String,
+      };
+    });
   }
 
   Future<double> getTotalIncome() async {
@@ -65,15 +80,43 @@ class DatabaseService {
     return result.first['total'] as double? ?? 0.0;
   }
 
+  Future<List<Map<String, dynamic>>> getIncomeLast30Days() async {
+    Database db = await database;
+    final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
+    return await db.query(
+      'incomes',
+      where: 'date >= ?',
+      whereArgs: [thirtyDaysAgo.toIso8601String()],
+      orderBy: 'date DESC',
+    );
+  }
+
   // Gider işlemleri
   Future<int> insertExpense(Map<String, dynamic> expense) async {
     Database db = await database;
-    return await db.insert('expenses', expense);
+    return await db.insert('expenses', {
+      'amount': expense['amount'],
+      'description': expense['description'] ?? '',
+      'category': expense['category'],
+      'date': expense['date'],
+    });
   }
 
   Future<List<Map<String, dynamic>>> getExpenses() async {
     Database db = await database;
-    return await db.query('expenses', orderBy: 'date DESC');
+    final List<Map<String, dynamic>> maps = await db.query(
+      'expenses',
+      orderBy: 'date DESC',
+    );
+    return List.generate(maps.length, (i) {
+      return {
+        'id': maps[i]['id'],
+        'amount': maps[i]['amount'] as double,
+        'description': maps[i]['description'] as String,
+        'category': maps[i]['category'] as String,
+        'date': maps[i]['date'] as String,
+      };
+    });
   }
 
   Future<double> getTotalExpense() async {
@@ -81,6 +124,17 @@ class DatabaseService {
     final result =
         await db.rawQuery('SELECT SUM(amount) as total FROM expenses');
     return result.first['total'] as double? ?? 0.0;
+  }
+
+  Future<List<Map<String, dynamic>>> getExpenseLast30Days() async {
+    Database db = await database;
+    final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
+    return await db.query(
+      'expenses',
+      where: 'date >= ?',
+      whereArgs: [thirtyDaysAgo.toIso8601String()],
+      orderBy: 'date DESC',
+    );
   }
 
   // Kategori bazlı gider analizi

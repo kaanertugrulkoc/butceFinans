@@ -42,6 +42,13 @@ class HomePage extends GetView<HomeController> {
                     Colors.red,
                     () => Get.toNamed('/expense'),
                   ),
+                  _buildMenuCard(
+                    context,
+                    'İşlem Geçmişi',
+                    Icons.history,
+                    Colors.blue,
+                    () => Get.toNamed('/transactions'),
+                  ),
                 ],
               ),
             ],

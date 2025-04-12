@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'income_controller.dart';
 
 class IncomePage extends GetView<IncomeController> {
-  const IncomePage({Key? key}) : super(key: key);
+  const IncomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,56 +11,56 @@ class IncomePage extends GetView<IncomeController> {
       appBar: AppBar(
         title: const Text('Gelirler'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Gelir ekleme formu
-            Form(
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: controller.amountController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Gelir Miktarı',
-                      prefixText: '₺',
-                    ),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return ListView.builder(
+          itemCount: controller.incomes.length,
+          itemBuilder: (context, index) {
+            final income = controller.incomes[index];
+
+            // Null kontrolü ve tip dönüşümü
+            final amount = (income['amount'] ?? 0.0) as double;
+            final description = income['description']?.toString() ?? '';
+            final date = income['date']?.toString() ?? '';
+
+            return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: Colors.green,
+                  child: Icon(
+                    Icons.attach_money,
+                    color: Colors.white,
                   ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: controller.descriptionController,
-                    decoration: const InputDecoration(
-                      labelText: 'Açıklama',
-                    ),
+                ),
+                title: Text(
+                  '${amount.toStringAsFixed(2)}₺',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
                   ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: controller.addIncome,
-                    child: const Text('Gelir Ekle'),
-                  ),
-                ],
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (description.isNotEmpty) Text(description),
+                    if (date.isNotEmpty)
+                      Text(
+                        controller.formatDate(date),
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            // Gelir listesi
-            Expanded(
-              child: Obx(() => ListView.builder(
-                    itemCount: controller.incomes.length,
-                    itemBuilder: (context, index) {
-                      final income = controller.incomes[index];
-                      return Card(
-                        child: ListTile(
-                          title: Text('₺${income.amount}'),
-                          subtitle: Text(income.description),
-                          trailing: Text(income.date),
-                        ),
-                      );
-                    },
-                  )),
-            ),
-          ],
-        ),
+            );
+          },
+        );
+      }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => controller.showAddIncomeDialog(context),
+        child: const Icon(Icons.add),
       ),
     );
   }

@@ -53,6 +53,62 @@ class IncomeController extends GetxController {
     descriptionController.dispose();
     super.onClose();
   }
+
+  String formatDate(String dateStr) {
+    final date = DateTime.parse(dateStr);
+    return '${date.day}/${date.month}/${date.year}';
+  }
+
+  void showAddIncomeDialog(BuildContext context) {
+    final amountController = TextEditingController();
+    final descriptionController = TextEditingController();
+
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Yeni Gelir Ekle'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: amountController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Gelir Miktarı',
+                prefixText: '₺',
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: descriptionController,
+              decoration: const InputDecoration(
+                labelText: 'Açıklama',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('İptal'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (amountController.text.isNotEmpty) {
+                await databaseService.insertIncome({
+                  'amount': double.parse(amountController.text),
+                  'description': descriptionController.text,
+                  'date': DateTime.now().toIso8601String(),
+                });
+                await loadIncomes();
+                Get.back();
+              }
+            },
+            child: const Text('Ekle'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class Income {

@@ -10,6 +10,8 @@ import '../modules/income/income_binding.dart';
 import '../modules/income/income_page.dart';
 import '../modules/expense/expense_binding.dart';
 import '../modules/expense/expense_page.dart';
+import '../modules/transactions/transactions_binding.dart';
+import '../modules/transactions/transactions_page.dart';
 
 abstract class AppRouters {
   static const INITIAL = SPLASH;
@@ -19,6 +21,7 @@ abstract class AppRouters {
   static const PROFILE = '/profil';
   static const INCOME = '/income';
   static const EXPENSE = '/expense';
+  static const TRANSACTIONS = '/transactions';
 }
 
 class AppPages {
@@ -47,6 +50,11 @@ class AppPages {
       name: AppRouters.EXPENSE,
       page: () => const ExpensePage(),
       binding: ExpenseBinding(),
-    )
+    ),
+    GetPage(
+      name: AppRouters.TRANSACTIONS,
+      page: () => const TransactionsPage(),
+      binding: TransactionsBinding(),
+    ),
   ];
 }

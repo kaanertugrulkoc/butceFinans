@@ -59,6 +59,90 @@ class ExpenseController extends GetxController {
     categoryController.dispose();
     super.onClose();
   }
+
+  String formatDate(String dateStr) {
+    final date = DateTime.parse(dateStr);
+    return '${date.day}/${date.month}/${date.year}';
+  }
+
+  void showAddExpenseDialog(BuildContext context) {
+    final amountController = TextEditingController();
+    final descriptionController = TextEditingController();
+    final categoryController = TextEditingController();
+    final categories = [
+      'Yemek',
+      'Ulaşım',
+      'Alışveriş',
+      'Faturalar',
+      'Eğlence',
+      'Diğer'
+    ];
+
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Yeni Gider Ekle'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: amountController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Gider Miktarı',
+                prefixText: '₺',
+              ),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                labelText: 'Kategori',
+              ),
+              items: categories.map((String category) {
+                return DropdownMenuItem<String>(
+                  value: category,
+                  child: Text(category),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  categoryController.text = newValue;
+                }
+              },
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: descriptionController,
+              decoration: const InputDecoration(
+                labelText: 'Açıklama',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('İptal'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (amountController.text.isNotEmpty &&
+                  categoryController.text.isNotEmpty) {
+                await databaseService.insertExpense({
+                  'amount': double.parse(amountController.text),
+                  'description': descriptionController.text,
+                  'category': categoryController.text,
+                  'date': DateTime.now().toIso8601String(),
+                });
+                await loadExpenses();
+                Get.back();
+              }
+            },
+            child: const Text('Ekle'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class Expense {
