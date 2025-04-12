@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import '../services/database_service.dart';
+import 'package:flutter/material.dart';
 
 class TransactionsController extends GetxController {
   final DatabaseService _databaseService = DatabaseService();
@@ -52,7 +53,14 @@ class TransactionsController extends GetxController {
         year: selectedYear.value,
       );
     } catch (e) {
-      print('İşlemleri yükleme hatası: $e');
+      print('İşlemler yüklenirken hata oluştu: $e');
+      Get.snackbar(
+        'Hata',
+        'İşlemler yüklenirken bir hata oluştu. Lütfen tekrar deneyin.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -72,7 +80,14 @@ class TransactionsController extends GetxController {
       incomeCategories.value = loadedIncomeCategories;
       expenseCategories.value = loadedExpenseCategories;
     } catch (e) {
-      print('Kategori analizlerini yükleme hatası: $e');
+      print('Kategori analizleri yüklenirken hata oluştu: $e');
+      Get.snackbar(
+        'Hata',
+        'Kategori analizleri yüklenirken bir hata oluştu. Lütfen tekrar deneyin.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -93,9 +108,22 @@ class TransactionsController extends GetxController {
       await _databaseService.insertIncome(income);
       await loadTransactions();
       await loadCategoryAnalyses();
+      Get.snackbar(
+        'Başarılı',
+        'Gelir başarıyla eklendi',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
     } catch (e) {
-      print('Gelir ekleme hatası: $e');
-      rethrow;
+      print('Gelir eklenirken hata oluştu: $e');
+      Get.snackbar(
+        'Hata',
+        'Gelir eklenirken bir hata oluştu. Lütfen tekrar deneyin.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -104,9 +132,22 @@ class TransactionsController extends GetxController {
       await _databaseService.insertExpense(expense);
       await loadTransactions();
       await loadCategoryAnalyses();
+      Get.snackbar(
+        'Başarılı',
+        'Gider başarıyla eklendi',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
     } catch (e) {
-      print('Gider ekleme hatası: $e');
-      rethrow;
+      print('Gider eklenirken hata oluştu: $e');
+      Get.snackbar(
+        'Hata',
+        'Gider eklenirken bir hata oluştu. Lütfen tekrar deneyin.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -115,9 +156,22 @@ class TransactionsController extends GetxController {
       await _databaseService.deleteIncome(id);
       await loadTransactions();
       await loadCategoryAnalyses();
+      Get.snackbar(
+        'Başarılı',
+        'Gelir başarıyla silindi',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
     } catch (e) {
-      print('Gelir silme hatası: $e');
-      rethrow;
+      print('Gelir silinirken hata oluştu: $e');
+      Get.snackbar(
+        'Hata',
+        'Gelir silinirken bir hata oluştu. Lütfen tekrar deneyin.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -126,9 +180,22 @@ class TransactionsController extends GetxController {
       await _databaseService.deleteExpense(id);
       await loadTransactions();
       await loadCategoryAnalyses();
+      Get.snackbar(
+        'Başarılı',
+        'Gider başarıyla silindi',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
     } catch (e) {
-      print('Gider silme hatası: $e');
-      rethrow;
+      print('Gider silinirken hata oluştu: $e');
+      Get.snackbar(
+        'Hata',
+        'Gider silinirken bir hata oluştu. Lütfen tekrar deneyin.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 }
