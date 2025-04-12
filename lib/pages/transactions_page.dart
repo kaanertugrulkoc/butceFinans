@@ -88,7 +88,6 @@ class TransactionsPage extends StatelessWidget {
         children: [
           Obx(() => CategoryAnalysis(
                 categories: _controller.incomeCategories,
-                total: _controller.totalIncome.value,
                 isIncome: true,
               )),
           Obx(() => TransactionList(
@@ -107,7 +106,6 @@ class TransactionsPage extends StatelessWidget {
         children: [
           Obx(() => CategoryAnalysis(
                 categories: _controller.expenseCategories,
-                total: _controller.totalExpense.value,
                 isIncome: false,
               )),
           Obx(() => TransactionList(

@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import '../services/database_service.dart';
 import 'package:flutter/material.dart';
+import '../models/category.dart';
 
 class TransactionsController extends GetxController {
   final DatabaseService _databaseService = DatabaseService();
@@ -10,10 +11,8 @@ class TransactionsController extends GetxController {
   final RxList<Map<String, dynamic>> expenses = <Map<String, dynamic>>[].obs;
 
   // Kategori bazlı analizler
-  final RxList<Map<String, dynamic>> incomeCategories =
-      <Map<String, dynamic>>[].obs;
-  final RxList<Map<String, dynamic>> expenseCategories =
-      <Map<String, dynamic>>[].obs;
+  final RxList<Category> incomeCategories = <Category>[].obs;
+  final RxList<Category> expenseCategories = <Category>[].obs;
 
   // Toplam değerler
   final RxDouble totalIncome = 0.0.obs;
@@ -23,11 +22,21 @@ class TransactionsController extends GetxController {
   final RxInt selectedMonth = DateTime.now().month.obs;
   final RxInt selectedYear = DateTime.now().year.obs;
 
+  // Aylık özet
+  final RxList<Map<String, dynamic>> monthlySummary =
+      <Map<String, dynamic>>[].obs;
+
+  // Yıllık özet
+  final RxList<Map<String, dynamic>> yearlySummary =
+      <Map<String, dynamic>>[].obs;
+
   @override
   void onInit() {
     super.onInit();
     loadTransactions();
     loadCategoryAnalyses();
+    loadMonthlySummary();
+    loadYearlySummary();
   }
 
   Future<void> loadTransactions() async {
@@ -65,14 +74,30 @@ class TransactionsController extends GetxController {
 
   Future<void> loadCategoryAnalyses() async {
     try {
-      incomeCategories.value = await _databaseService.getIncomesByCategory(
+      final incomeCategoryData = await _databaseService.getIncomesByCategory(
         month: selectedMonth.value,
         year: selectedYear.value,
       );
-      expenseCategories.value = await _databaseService.getExpensesByCategory(
+      final expenseCategoryData = await _databaseService.getExpensesByCategory(
         month: selectedMonth.value,
         year: selectedYear.value,
       );
+
+      incomeCategories.value = incomeCategoryData
+          .map((data) => Category(
+                name: data['category'] as String,
+                amount: data['total'] as double,
+              ))
+          .toList()
+        ..sort((a, b) => b.amount.compareTo(a.amount));
+
+      expenseCategories.value = expenseCategoryData
+          .map((data) => Category(
+                name: data['category'] as String,
+                amount: data['total'] as double,
+              ))
+          .toList()
+        ..sort((a, b) => b.amount.compareTo(a.amount));
     } catch (e) {
       Get.snackbar(
         'Hata',
@@ -84,16 +109,50 @@ class TransactionsController extends GetxController {
     }
   }
 
+  Future<void> loadMonthlySummary() async {
+    try {
+      final summary = await _databaseService.getMonthlySummary(
+        year: selectedYear.value,
+      );
+      monthlySummary.value = summary;
+    } catch (e) {
+      Get.snackbar(
+        'Hata',
+        'Aylık özet yüklenirken bir hata oluştu',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  Future<void> loadYearlySummary() async {
+    try {
+      final summary = await _databaseService.getYearlySummary();
+      yearlySummary.value = summary;
+    } catch (e) {
+      Get.snackbar(
+        'Hata',
+        'Yıllık özet yüklenirken bir hata oluştu',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
   void setSelectedMonth(int month) {
     selectedMonth.value = month;
     loadTransactions();
     loadCategoryAnalyses();
+    loadMonthlySummary();
   }
 
   void setSelectedYear(int year) {
     selectedYear.value = year;
     loadTransactions();
     loadCategoryAnalyses();
+    loadMonthlySummary();
   }
 
   Future<void> addIncome(Map<String, dynamic> income) async {

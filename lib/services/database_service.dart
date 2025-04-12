@@ -20,7 +20,7 @@ class DatabaseService {
   }
 
   Future<Database> _initDatabase() async {
-    final path = join(await getDatabasesPath(), 'finance.db');
+    String path = join(await getDatabasesPath(), 'finance.db');
     return await openDatabase(
       path,
       version: 1,
@@ -35,9 +35,9 @@ class DatabaseService {
         amount REAL NOT NULL,
         description TEXT,
         category TEXT NOT NULL,
-        date TEXT NOT NULL,
         month INTEGER NOT NULL,
-        year INTEGER NOT NULL
+        year INTEGER NOT NULL,
+        date TEXT NOT NULL
       )
     ''');
 
@@ -47,259 +47,261 @@ class DatabaseService {
         amount REAL NOT NULL,
         description TEXT,
         category TEXT NOT NULL,
-        date TEXT NOT NULL,
         month INTEGER NOT NULL,
-        year INTEGER NOT NULL
+        year INTEGER NOT NULL,
+        date TEXT NOT NULL
       )
     ''');
   }
 
-  // Gelir işlemleri
   Future<int> insertIncome(Map<String, dynamic> income) async {
-    try {
-      final db = await database;
-      final now = DateTime.now();
+    final db = await database;
+    final now = DateTime.now();
 
-      // Veri doğrulama
-      if (income['amount'] == null) {
-        throw Exception('Miktar alanı boş olamaz');
-      }
+    final data = {
+      'amount': income['amount'],
+      'description': income['description'],
+      'category': income['category'],
+      'month': income['month'] ?? now.month,
+      'year': income['year'] ?? now.year,
+      'date': now.toIso8601String(),
+    };
 
-      final data = {
-        'amount': double.parse(income['amount'].toString()),
-        'description': income['description']?.toString() ?? '',
-        'category': income['category']?.toString() ?? 'Diğer',
-        'date': income['date']?.toString() ?? now.toIso8601String(),
-        'month': income['month'] ?? now.month,
-        'year': income['year'] ?? now.year,
-      };
-
-      final result = await db.insert('incomes', data);
-      print('Gelir başarıyla eklendi: $data');
-      return result;
-    } catch (e) {
-      print('Gelir eklenirken hata oluştu: $e');
-      Get.snackbar(
-        'Hata',
-        'Gelir eklenirken bir hata oluştu. Lütfen tekrar deneyin.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      rethrow;
-    }
+    return await db.insert('incomes', data);
   }
 
-  Future<List<Map<String, dynamic>>> getIncomes({int? month, int? year}) async {
+  Future<int> insertExpense(Map<String, dynamic> expense) async {
     final db = await database;
-    String whereClause = '';
+    final now = DateTime.now();
+
+    final data = {
+      'amount': expense['amount'],
+      'description': expense['description'],
+      'category': expense['category'],
+      'month': expense['month'] ?? now.month,
+      'year': expense['year'] ?? now.year,
+      'date': now.toIso8601String(),
+    };
+
+    return await db.insert('expenses', data);
+  }
+
+  Future<List<Map<String, dynamic>>> getIncomes({
+    int? month,
+    int? year,
+    String? category,
+  }) async {
+    final db = await database;
+    String whereClause = '1=1';
     List<dynamic> whereArgs = [];
 
-    if (month != null && year != null) {
-      whereClause = 'month = ? AND year = ?';
-      whereArgs = [month, year];
+    if (month != null) {
+      whereClause += ' AND month = ?';
+      whereArgs.add(month);
+    }
+    if (year != null) {
+      whereClause += ' AND year = ?';
+      whereArgs.add(year);
+    }
+    if (category != null) {
+      whereClause += ' AND category = ?';
+      whereArgs.add(category);
     }
 
     return await db.query(
       'incomes',
-      where: whereClause.isEmpty ? null : whereClause,
-      whereArgs: whereArgs.isEmpty ? null : whereArgs,
+      where: whereClause,
+      whereArgs: whereArgs,
+      orderBy: 'date DESC',
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> getExpenses({
+    int? month,
+    int? year,
+    String? category,
+  }) async {
+    final db = await database;
+    String whereClause = '1=1';
+    List<dynamic> whereArgs = [];
+
+    if (month != null) {
+      whereClause += ' AND month = ?';
+      whereArgs.add(month);
+    }
+    if (year != null) {
+      whereClause += ' AND year = ?';
+      whereArgs.add(year);
+    }
+    if (category != null) {
+      whereClause += ' AND category = ?';
+      whereArgs.add(category);
+    }
+
+    return await db.query(
+      'expenses',
+      where: whereClause,
+      whereArgs: whereArgs,
       orderBy: 'date DESC',
     );
   }
 
   Future<double> getTotalIncome({int? month, int? year}) async {
     final db = await database;
-    String whereClause = '';
+    String whereClause = '1=1';
     List<dynamic> whereArgs = [];
 
-    if (month != null && year != null) {
-      whereClause = 'month = ? AND year = ?';
-      whereArgs = [month, year];
+    if (month != null) {
+      whereClause += ' AND month = ?';
+      whereArgs.add(month);
+    }
+    if (year != null) {
+      whereClause += ' AND year = ?';
+      whereArgs.add(year);
     }
 
     final result = await db.rawQuery(
-      'SELECT SUM(amount) as total FROM incomes${whereClause.isNotEmpty ? ' WHERE $whereClause' : ''}',
+      'SELECT SUM(amount) as total FROM incomes WHERE $whereClause',
       whereArgs,
     );
+
     return result.first['total'] as double? ?? 0.0;
   }
 
-  Future<List<Map<String, dynamic>>> getIncomesByCategory(
-      {int? month, int? year}) async {
+  Future<double> getTotalExpense({int? month, int? year}) async {
     final db = await database;
-    String whereClause = '';
+    String whereClause = '1=1';
     List<dynamic> whereArgs = [];
 
-    if (month != null && year != null) {
-      whereClause = 'month = ? AND year = ?';
-      whereArgs = [month, year];
+    if (month != null) {
+      whereClause += ' AND month = ?';
+      whereArgs.add(month);
+    }
+    if (year != null) {
+      whereClause += ' AND year = ?';
+      whereArgs.add(year);
+    }
+
+    final result = await db.rawQuery(
+      'SELECT SUM(amount) as total FROM expenses WHERE $whereClause',
+      whereArgs,
+    );
+
+    return result.first['total'] as double? ?? 0.0;
+  }
+
+  Future<List<Map<String, dynamic>>> getIncomesByCategory({
+    int? month,
+    int? year,
+  }) async {
+    final db = await database;
+    String whereClause = '1=1';
+    List<dynamic> whereArgs = [];
+
+    if (month != null) {
+      whereClause += ' AND month = ?';
+      whereArgs.add(month);
+    }
+    if (year != null) {
+      whereClause += ' AND year = ?';
+      whereArgs.add(year);
     }
 
     return await db.rawQuery('''
       SELECT category, SUM(amount) as total
       FROM incomes
-      ${whereClause.isNotEmpty ? 'WHERE $whereClause' : ''}
+      WHERE $whereClause
       GROUP BY category
       ORDER BY total DESC
     ''', whereArgs);
   }
 
-  // Gider işlemleri
-  Future<int> insertExpense(Map<String, dynamic> expense) async {
-    try {
-      final db = await database;
-      final now = DateTime.now();
-
-      // Veri doğrulama
-      if (expense['amount'] == null) {
-        throw Exception('Miktar alanı boş olamaz');
-      }
-
-      final data = {
-        'amount': double.parse(expense['amount'].toString()),
-        'description': expense['description']?.toString() ?? '',
-        'category': expense['category']?.toString() ?? 'Diğer',
-        'date': expense['date']?.toString() ?? now.toIso8601String(),
-        'month': expense['month'] ?? now.month,
-        'year': expense['year'] ?? now.year,
-      };
-
-      final result = await db.insert('expenses', data);
-      print('Gider başarıyla eklendi: $data');
-      return result;
-    } catch (e) {
-      print('Gider eklenirken hata oluştu: $e');
-      Get.snackbar(
-        'Hata',
-        'Gider eklenirken bir hata oluştu. Lütfen tekrar deneyin.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      rethrow;
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> getExpenses(
-      {int? month, int? year}) async {
+  Future<List<Map<String, dynamic>>> getExpensesByCategory({
+    int? month,
+    int? year,
+  }) async {
     final db = await database;
-    String whereClause = '';
+    String whereClause = '1=1';
     List<dynamic> whereArgs = [];
 
-    if (month != null && year != null) {
-      whereClause = 'month = ? AND year = ?';
-      whereArgs = [month, year];
+    if (month != null) {
+      whereClause += ' AND month = ?';
+      whereArgs.add(month);
     }
-
-    return await db.query(
-      'expenses',
-      where: whereClause.isEmpty ? null : whereClause,
-      whereArgs: whereArgs.isEmpty ? null : whereArgs,
-      orderBy: 'date DESC',
-    );
-  }
-
-  Future<double> getTotalExpense({int? month, int? year}) async {
-    final db = await database;
-    String whereClause = '';
-    List<dynamic> whereArgs = [];
-
-    if (month != null && year != null) {
-      whereClause = 'month = ? AND year = ?';
-      whereArgs = [month, year];
-    }
-
-    final result = await db.rawQuery(
-      'SELECT SUM(amount) as total FROM expenses${whereClause.isNotEmpty ? ' WHERE $whereClause' : ''}',
-      whereArgs,
-    );
-    return result.first['total'] as double? ?? 0.0;
-  }
-
-  Future<List<Map<String, dynamic>>> getExpensesByCategory(
-      {int? month, int? year}) async {
-    final db = await database;
-    String whereClause = '';
-    List<dynamic> whereArgs = [];
-
-    if (month != null && year != null) {
-      whereClause = 'month = ? AND year = ?';
-      whereArgs = [month, year];
+    if (year != null) {
+      whereClause += ' AND year = ?';
+      whereArgs.add(year);
     }
 
     return await db.rawQuery('''
       SELECT category, SUM(amount) as total
       FROM expenses
-      ${whereClause.isNotEmpty ? 'WHERE $whereClause' : ''}
+      WHERE $whereClause
       GROUP BY category
       ORDER BY total DESC
     ''', whereArgs);
   }
 
-  // Silme işlemleri
-  Future<void> deleteIncome(int id) async {
-    try {
-      final db = await database;
-      await db.delete(
-        'incomes',
-        where: 'id = ?',
-        whereArgs: [id],
-      );
-      print('Gelir başarıyla silindi: $id');
-    } catch (e) {
-      print('Gelir silinirken hata oluştu: $e');
-      Get.snackbar(
-        'Hata',
-        'Gelir silinirken bir hata oluştu. Lütfen tekrar deneyin.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      rethrow;
+  Future<List<Map<String, dynamic>>> getMonthlySummary({
+    int? year,
+  }) async {
+    final db = await database;
+    String whereClause = '1=1';
+    List<dynamic> whereArgs = [];
+
+    if (year != null) {
+      whereClause += ' AND year = ?';
+      whereArgs.add(year);
     }
+
+    return await db.rawQuery('''
+      SELECT 
+        month,
+        year,
+        SUM(CASE WHEN table_name = 'incomes' THEN amount ELSE 0 END) as total_income,
+        SUM(CASE WHEN table_name = 'expenses' THEN amount ELSE 0 END) as total_expense
+      FROM (
+        SELECT month, year, amount, 'incomes' as table_name FROM incomes
+        UNION ALL
+        SELECT month, year, amount, 'expenses' as table_name FROM expenses
+      )
+      WHERE $whereClause
+      GROUP BY month, year
+      ORDER BY year DESC, month DESC
+    ''', whereArgs);
+  }
+
+  Future<List<Map<String, dynamic>>> getYearlySummary() async {
+    final db = await database;
+    return await db.rawQuery('''
+      SELECT 
+        year,
+        SUM(CASE WHEN table_name = 'incomes' THEN amount ELSE 0 END) as total_income,
+        SUM(CASE WHEN table_name = 'expenses' THEN amount ELSE 0 END) as total_expense
+      FROM (
+        SELECT year, amount, 'incomes' as table_name FROM incomes
+        UNION ALL
+        SELECT year, amount, 'expenses' as table_name FROM expenses
+      )
+      GROUP BY year
+      ORDER BY year DESC
+    ''');
+  }
+
+  Future<void> deleteIncome(int id) async {
+    final db = await database;
+    await db.delete('incomes', where: 'id = ?', whereArgs: [id]);
   }
 
   Future<void> deleteExpense(int id) async {
-    try {
-      final db = await database;
-      await db.delete(
-        'expenses',
-        where: 'id = ?',
-        whereArgs: [id],
-      );
-      print('Gider başarıyla silindi: $id');
-    } catch (e) {
-      print('Gider silinirken hata oluştu: $e');
-      Get.snackbar(
-        'Hata',
-        'Gider silinirken bir hata oluştu. Lütfen tekrar deneyin.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      rethrow;
-    }
+    final db = await database;
+    await db.delete('expenses', where: 'id = ?', whereArgs: [id]);
   }
 
-  // Veritabanını sıfırlama
   Future<void> resetDatabase() async {
-    try {
-      final db = await database;
-      await db.delete('incomes');
-      await db.delete('expenses');
-      print('Veritabanı başarıyla sıfırlandı');
-    } catch (e) {
-      print('Veritabanı sıfırlanırken hata oluştu: $e');
-      Get.snackbar(
-        'Hata',
-        'Veritabanı sıfırlanırken bir hata oluştu. Lütfen tekrar deneyin.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      rethrow;
-    }
+    final db = await database;
+    await db.delete('incomes');
+    await db.delete('expenses');
   }
 
   // Son 30 günlük veriler
