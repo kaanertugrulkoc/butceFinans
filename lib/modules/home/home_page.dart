@@ -3,11 +3,12 @@ import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'home_controller.dart';
 
-class HomePage extends GetView<HomeController> {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<HomeController>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ana Sayfa'),
@@ -22,11 +23,11 @@ class HomePage extends GetView<HomeController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSummaryCard(),
+              _buildSummaryCard(controller),
               const SizedBox(height: 24),
-              _buildPieChart(),
+              _buildPieChart(controller),
               const SizedBox(height: 24),
-              _buildCategoryList(),
+              _buildCategoryList(controller),
             ],
           ),
         );
@@ -34,7 +35,7 @@ class HomePage extends GetView<HomeController> {
     );
   }
 
-  Widget _buildSummaryCard() {
+  Widget _buildSummaryCard(HomeController controller) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -90,7 +91,7 @@ class HomePage extends GetView<HomeController> {
     );
   }
 
-  Widget _buildPieChart() {
+  Widget _buildPieChart(HomeController controller) {
     final total = controller.totalIncome.value + controller.totalExpense.value;
     if (total == 0) {
       return const Center(
@@ -182,7 +183,7 @@ class HomePage extends GetView<HomeController> {
     );
   }
 
-  Widget _buildCategoryList() {
+  Widget _buildCategoryList(HomeController controller) {
     if (controller.expensesByCategory.isEmpty) {
       return const Center(
         child: Text(
