@@ -152,13 +152,14 @@ class DatabaseService {
   Future<List<Map<String, dynamic>>> getLast30DaysData() async {
     Database db = await database;
     final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
-    final dateStr = thirtyDaysAgo.toIso8601String().split('T')[0];
+    final dateStr = thirtyDaysAgo.toIso8601String();
 
     final incomes = await db.rawQuery('''
       SELECT date, SUM(amount) as total
       FROM incomes
       WHERE date >= ?
       GROUP BY date
+      ORDER BY date DESC
     ''', [dateStr]);
 
     final expenses = await db.rawQuery('''
@@ -166,6 +167,7 @@ class DatabaseService {
       FROM expenses
       WHERE date >= ?
       GROUP BY date
+      ORDER BY date DESC
     ''', [dateStr]);
 
     return [
