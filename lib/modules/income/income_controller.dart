@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import '../../services/database_service.dart';
 
 class IncomeController extends GetxController {
-  final amountController = TextEditingController();
-  final descriptionController = TextEditingController();
   final databaseService = DatabaseService();
 
   final incomes = <Map<String, dynamic>>[].obs;
@@ -28,35 +26,13 @@ class IncomeController extends GetxController {
     }
   }
 
-  Future<void> addIncome() async {
-    if (amountController.text.isNotEmpty) {
-      final income = {
-        'amount': double.parse(amountController.text),
-        'description': descriptionController.text,
-        'date': DateTime.now().toString().split(' ')[0],
-      };
-
-      await databaseService.insertIncome(income);
-
-      // Form temizleme
-      amountController.clear();
-      descriptionController.clear();
-
-      // Listeyi güncelle
-      await loadIncomes();
-    }
-  }
-
-  @override
-  void onClose() {
-    amountController.dispose();
-    descriptionController.dispose();
-    super.onClose();
-  }
-
   String formatDate(String dateStr) {
-    final date = DateTime.parse(dateStr);
-    return '${date.day}/${date.month}/${date.year}';
+    try {
+      final date = DateTime.parse(dateStr);
+      return '${date.day}/${date.month}/${date.year}';
+    } catch (e) {
+      return dateStr;
+    }
   }
 
   void showAddIncomeDialog(BuildContext context) {
@@ -94,13 +70,21 @@ class IncomeController extends GetxController {
           ElevatedButton(
             onPressed: () async {
               if (amountController.text.isNotEmpty) {
-                await databaseService.insertIncome({
-                  'amount': double.parse(amountController.text),
-                  'description': descriptionController.text,
-                  'date': DateTime.now().toIso8601String(),
-                });
-                await loadIncomes();
-                Get.back();
+                try {
+                  await databaseService.insertIncome({
+                    'amount': double.parse(amountController.text),
+                    'description': descriptionController.text,
+                    'date': DateTime.now().toIso8601String(),
+                  });
+                  await loadIncomes();
+                  Get.back();
+                } catch (e) {
+                  Get.snackbar(
+                    'Hata',
+                    'Gelir eklenirken bir hata oluştu',
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
+                }
               }
             },
             child: const Text('Ekle'),
@@ -109,16 +93,4 @@ class IncomeController extends GetxController {
       ),
     );
   }
-}
-
-class Income {
-  final double amount;
-  final String description;
-  final String date;
-
-  Income({
-    required this.amount,
-    required this.description,
-    required this.date,
-  });
 }

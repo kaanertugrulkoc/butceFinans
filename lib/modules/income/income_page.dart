@@ -28,7 +28,7 @@ class IncomePage extends GetView<IncomeController> {
             return Card(
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: ListTile(
-                leading: CircleAvatar(
+                leading: const CircleAvatar(
                   backgroundColor: Colors.green,
                   child: Icon(
                     Icons.attach_money,
@@ -37,7 +37,7 @@ class IncomePage extends GetView<IncomeController> {
                 ),
                 title: Text(
                   '${amount.toStringAsFixed(2)}₺',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.green,
                   ),
