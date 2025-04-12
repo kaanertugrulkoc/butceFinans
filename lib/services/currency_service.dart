@@ -4,8 +4,8 @@ import 'dart:convert';
 class CurrencyService {
   static const String _exchangeRateUrl =
       'https://api.exchangerate-api.com/v4/latest/USD';
-  static const String _goldApiUrl =
-      'https://api.exchangerate-api.com/v4/latest/XAU';
+  static const String _goldPriceUrl =
+      'https://data-asg.goldprice.org/dbXRates/TRY';
 
   Future<Map<String, dynamic>> getCurrencyRates() async {
     try {
@@ -33,29 +33,17 @@ class CurrencyService {
 
   Future<double> getGoldPrice() async {
     try {
-      // Önce altın fiyatını USD cinsinden al
-      final goldResponse = await http.get(Uri.parse(_goldApiUrl));
-      if (goldResponse.statusCode == 200) {
-        final goldData = json.decode(goldResponse.body);
-        final goldRateInUsd = goldData['rates']['USD'];
-
-        // Sonra USD/TRY kurunu al
-        final currencyResponse = await http.get(Uri.parse(_exchangeRateUrl));
-        if (currencyResponse.statusCode == 200) {
-          final currencyData = json.decode(currencyResponse.body);
-          final usdToTry = currencyData['rates']['TRY'];
-
-          // Gram altın fiyatını hesapla (1 ons = 31.1034768 gram)
-          const gramsPerOunce = 31.1034768;
-          final goldPricePerGramInTry =
-              (goldRateInUsd * usdToTry) / gramsPerOunce;
-
-          return goldPricePerGramInTry;
-        }
+      final response = await http.get(Uri.parse(_goldPriceUrl));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        // Goldprice.org'dan gram altın fiyatını al
+        final goldPrice =
+            data['items'][0]['xauPrice'] / 31.1034768; // Ons'tan gram'a çevir
+        return goldPrice;
       }
       throw Exception('Altın fiyatı alınamadı');
     } catch (e) {
-      // API hatası durumunda yedek API'yi dene
+      // Goldprice.org API hatası durumunda yedek API'yi dene
       return _getBackupGoldPrice();
     }
   }
