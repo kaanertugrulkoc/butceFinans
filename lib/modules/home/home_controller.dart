@@ -35,8 +35,8 @@ class HomeController extends GetxController {
     try {
       totalIncome.value = await databaseService.getTotalIncome();
       totalExpense.value = await databaseService.getTotalExpense();
-      expensesByCategory.value = await databaseService.getExpensesByCategory();
       incomesByCategory.value = await databaseService.getIncomesByCategory();
+      expensesByCategory.value = await databaseService.getExpensesByCategory();
     } catch (e) {
       Get.snackbar(
         'Hata',

@@ -192,86 +192,68 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildCategoryTabs(HomeController controller) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Kategori Analizi',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(16),
+          child: Text(
+            'Kategori Analizi',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildCategoryTab(
-                  'Gelirler',
-                  Icons.attach_money,
-                  Colors.green,
-                  controller.selectedCategoryTab == 0,
-                  () => controller.changeCategoryTab(0),
-                ),
-                _buildCategoryTab(
-                  'Giderler',
-                  Icons.money_off,
-                  Colors.red,
-                  controller.selectedCategoryTab == 1,
-                  () => controller.changeCategoryTab(1),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (controller.selectedCategoryTab == 0)
-              _buildIncomeCategories(controller)
-            else
-              _buildExpenseCategories(controller),
-          ],
+          ),
         ),
-      ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              _buildCategoryTab(controller, 0, 'Gelirler'),
+              _buildCategoryTab(controller, 1, 'Giderler'),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        Obx(() {
+          if (controller.selectedCategoryTab.value == 0) {
+            return _buildIncomeCategories(controller);
+          } else {
+            return _buildExpenseCategories(controller);
+          }
+        }),
+      ],
     );
   }
 
-  Widget _buildCategoryTab(
-    String title,
-    IconData icon,
-    Color color,
-    bool isSelected,
-    VoidCallback onTap,
-  ) {
+  Widget _buildCategoryTab(HomeController controller, int index, String title) {
     return InkWell(
-      onTap: onTap,
+      onTap: () => controller.changeCategoryTab(index),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected
-              ? color.withOpacity(0.1)
+          color: controller.selectedCategoryTab.value == index
+              ? Colors.green.withOpacity(0.1)
               : Colors.grey.withOpacity(0.1),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? color : Colors.transparent,
+            color: controller.selectedCategoryTab.value == index
+                ? Colors.green
+                : Colors.transparent,
             width: 2,
           ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 16,
-              color: isSelected ? color : Colors.grey,
-            ),
-            const SizedBox(width: 8),
             Text(
               title,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: isSelected ? color : Colors.grey,
+                color: controller.selectedCategoryTab.value == index
+                    ? Colors.green
+                    : Colors.grey,
               ),
             ),
           ],
@@ -283,10 +265,7 @@ class HomePage extends StatelessWidget {
   Widget _buildIncomeCategories(HomeController controller) {
     if (controller.incomesByCategory.isEmpty) {
       return const Center(
-        child: Text(
-          'Henüz kategori bazlı gelir bulunmuyor',
-          style: TextStyle(fontSize: 14, color: Colors.grey),
-        ),
+        child: Text('Henüz gelir kategorisi eklenmemiş'),
       );
     }
 
@@ -297,33 +276,28 @@ class HomePage extends StatelessWidget {
       itemBuilder: (context, index) {
         final category = controller.incomesByCategory[index];
         final total = category['total'] as double;
-        final percentage = (total / controller.totalIncome.value) * 100;
+        final percentage =
+            (total / controller.totalIncome.value * 100).toStringAsFixed(1);
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    category['category'] as String? ?? 'Kategorisiz',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    '${total.toStringAsFixed(2)}₺ (${percentage.toStringAsFixed(1)}%)',
-                    style: const TextStyle(color: Colors.green),
-                  ),
-                ],
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: Colors.green,
+              child: Text(
+                category['category'][0].toUpperCase(),
+                style: const TextStyle(color: Colors.white),
               ),
-              const SizedBox(height: 4),
-              LinearProgressIndicator(
-                value: percentage / 100,
-                backgroundColor: Colors.green.withOpacity(0.2),
-                valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
+            ),
+            title: Text(category['category']),
+            subtitle: Text('$percentage%'),
+            trailing: Text(
+              '${total.toStringAsFixed(2)}₺',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
               ),
-            ],
+            ),
           ),
         );
       },
@@ -333,10 +307,7 @@ class HomePage extends StatelessWidget {
   Widget _buildExpenseCategories(HomeController controller) {
     if (controller.expensesByCategory.isEmpty) {
       return const Center(
-        child: Text(
-          'Henüz kategori bazlı gider bulunmuyor',
-          style: TextStyle(fontSize: 14, color: Colors.grey),
-        ),
+        child: Text('Henüz gider kategorisi eklenmemiş'),
       );
     }
 
@@ -347,33 +318,28 @@ class HomePage extends StatelessWidget {
       itemBuilder: (context, index) {
         final category = controller.expensesByCategory[index];
         final total = category['total'] as double;
-        final percentage = (total / controller.totalExpense.value) * 100;
+        final percentage =
+            (total / controller.totalExpense.value * 100).toStringAsFixed(1);
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    category['category'] as String? ?? 'Kategorisiz',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    '${total.toStringAsFixed(2)}₺ (${percentage.toStringAsFixed(1)}%)',
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                ],
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: Colors.red,
+              child: Text(
+                category['category'][0].toUpperCase(),
+                style: const TextStyle(color: Colors.white),
               ),
-              const SizedBox(height: 4),
-              LinearProgressIndicator(
-                value: percentage / 100,
-                backgroundColor: Colors.red.withOpacity(0.2),
-                valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+            ),
+            title: Text(category['category']),
+            subtitle: Text('$percentage%'),
+            trailing: Text(
+              '${total.toStringAsFixed(2)}₺',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
               ),
-            ],
+            ),
           ),
         );
       },
