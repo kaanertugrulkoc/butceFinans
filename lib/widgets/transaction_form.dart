@@ -18,8 +18,11 @@ class _TransactionFormState extends State<TransactionForm> {
 
   final List<String> _incomeCategories = [
     'Maaş',
+    'Mesai',
     'Yatırım',
-    'Freelance',
+    'Kira',
+    'İkramiye',
+    'Ek Gelir',
     'Diğer',
   ];
 
