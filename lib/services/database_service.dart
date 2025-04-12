@@ -21,6 +21,7 @@ class DatabaseService {
       path,
       version: 1,
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -48,22 +49,60 @@ class DatabaseService {
     ''');
   }
 
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    // Veritabanı yapısında değişiklik yapılırsa burada güncelleme işlemleri yapılacak
+  }
+
   // Gelir işlemleri
   Future<int> insertIncome(Map<String, dynamic> income) async {
-    Database db = await database;
-    return await db.insert('incomes', income);
+    try {
+      final db = await database;
+
+      // Veri doğrulama
+      if (income['amount'] == null) {
+        throw Exception('Miktar alanı boş olamaz');
+      }
+
+      // Veriyi hazırla
+      final incomeData = {
+        'amount': double.parse(income['amount'].toString()),
+        'description': income['description']?.toString() ?? '',
+        'category': income['category']?.toString() ?? 'Diğer',
+        'date': income['date']?.toString() ?? DateTime.now().toIso8601String(),
+      };
+
+      print('Eklenecek gelir verisi: $incomeData');
+
+      final result = await db.insert('incomes', incomeData);
+      print('Gelir eklendi, ID: $result');
+      return result;
+    } catch (e, stackTrace) {
+      print('Gelir ekleme hatası: $e');
+      print('Stack Trace: $stackTrace');
+      rethrow;
+    }
   }
 
   Future<List<Map<String, dynamic>>> getIncomes() async {
-    Database db = await database;
-    return await db.query('incomes', orderBy: 'date DESC');
+    try {
+      final db = await database;
+      return await db.query('incomes', orderBy: 'date DESC');
+    } catch (e) {
+      print('Gelirleri getirme hatası: $e');
+      return [];
+    }
   }
 
   Future<double> getTotalIncome() async {
-    Database db = await database;
-    final result =
-        await db.rawQuery('SELECT SUM(amount) as total FROM incomes');
-    return result.first['total'] as double? ?? 0.0;
+    try {
+      final db = await database;
+      final result =
+          await db.rawQuery('SELECT SUM(amount) as total FROM incomes');
+      return result.first['total'] as double? ?? 0.0;
+    } catch (e) {
+      print('Toplam gelir hesaplama hatası: $e');
+      return 0.0;
+    }
   }
 
   Future<List<Map<String, dynamic>>> getIncomeLast30Days() async {
@@ -79,20 +118,54 @@ class DatabaseService {
 
   // Gider işlemleri
   Future<int> insertExpense(Map<String, dynamic> expense) async {
-    Database db = await database;
-    return await db.insert('expenses', expense);
+    try {
+      final db = await database;
+
+      // Veri doğrulama
+      if (expense['amount'] == null) {
+        throw Exception('Miktar alanı boş olamaz');
+      }
+
+      // Veriyi hazırla
+      final expenseData = {
+        'amount': double.parse(expense['amount'].toString()),
+        'description': expense['description']?.toString() ?? '',
+        'category': expense['category']?.toString() ?? 'Diğer',
+        'date': expense['date']?.toString() ?? DateTime.now().toIso8601String(),
+      };
+
+      print('Eklenecek gider verisi: $expenseData');
+
+      final result = await db.insert('expenses', expenseData);
+      print('Gider eklendi, ID: $result');
+      return result;
+    } catch (e, stackTrace) {
+      print('Gider ekleme hatası: $e');
+      print('Stack Trace: $stackTrace');
+      rethrow;
+    }
   }
 
   Future<List<Map<String, dynamic>>> getExpenses() async {
-    Database db = await database;
-    return await db.query('expenses', orderBy: 'date DESC');
+    try {
+      final db = await database;
+      return await db.query('expenses', orderBy: 'date DESC');
+    } catch (e) {
+      print('Giderleri getirme hatası: $e');
+      return [];
+    }
   }
 
   Future<double> getTotalExpense() async {
-    Database db = await database;
-    final result =
-        await db.rawQuery('SELECT SUM(amount) as total FROM expenses');
-    return result.first['total'] as double? ?? 0.0;
+    try {
+      final db = await database;
+      final result =
+          await db.rawQuery('SELECT SUM(amount) as total FROM expenses');
+      return result.first['total'] as double? ?? 0.0;
+    } catch (e) {
+      print('Toplam gider hesaplama hatası: $e');
+      return 0.0;
+    }
   }
 
   Future<List<Map<String, dynamic>>> getExpenseLast30Days() async {
@@ -106,15 +179,81 @@ class DatabaseService {
     );
   }
 
-  // Kategori bazlı gider analizi
+  // Kategori bazlı analizler
+  Future<List<Map<String, dynamic>>> getIncomesByCategory() async {
+    try {
+      final db = await database;
+      final List<Map<String, dynamic>> maps = await db.rawQuery('''
+        SELECT 
+          COALESCE(category, 'Kategorisiz') as category,
+          COALESCE(SUM(amount), 0) as total
+        FROM incomes
+        GROUP BY category
+        ORDER BY total DESC
+      ''');
+      print('Gelir kategorileri sorgu sonucu: $maps');
+      return maps;
+    } catch (e, stackTrace) {
+      print('Gelir kategorileri sorgu hatası: $e');
+      print('Stack Trace: $stackTrace');
+      return [];
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getExpensesByCategory() async {
-    Database db = await database;
-    return await db.rawQuery('''
-      SELECT category, SUM(amount) as total
-      FROM expenses
-      GROUP BY category
-      ORDER BY total DESC
-    ''');
+    try {
+      final db = await database;
+      final List<Map<String, dynamic>> maps = await db.rawQuery('''
+        SELECT 
+          COALESCE(category, 'Kategorisiz') as category,
+          COALESCE(SUM(amount), 0) as total
+        FROM expenses
+        GROUP BY category
+        ORDER BY total DESC
+      ''');
+      print('Gider kategorileri sorgu sonucu: $maps');
+      return maps;
+    } catch (e, stackTrace) {
+      print('Gider kategorileri sorgu hatası: $e');
+      print('Stack Trace: $stackTrace');
+      return [];
+    }
+  }
+
+  // Silme işlemleri
+  Future<void> deleteIncome(int id) async {
+    try {
+      final db = await database;
+      await db.delete('incomes', where: 'id = ?', whereArgs: [id]);
+      print('Gelir silindi, ID: $id');
+    } catch (e) {
+      print('Gelir silme hatası: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> deleteExpense(int id) async {
+    try {
+      final db = await database;
+      await db.delete('expenses', where: 'id = ?', whereArgs: [id]);
+      print('Gider silindi, ID: $id');
+    } catch (e) {
+      print('Gider silme hatası: $e');
+      rethrow;
+    }
+  }
+
+  // Veritabanını sıfırlama
+  Future<void> resetDatabase() async {
+    try {
+      final db = await database;
+      await db.delete('incomes');
+      await db.delete('expenses');
+      print('Veritabanı sıfırlandı');
+    } catch (e) {
+      print('Veritabanı sıfırlama hatası: $e');
+      rethrow;
+    }
   }
 
   // Son 30 günlük veriler
@@ -143,25 +282,5 @@ class DatabaseService {
       {'type': 'income', 'data': incomes},
       {'type': 'expense', 'data': expenses},
     ];
-  }
-
-  Future<void> deleteIncome(int id) async {
-    Database db = await database;
-    await db.delete('incomes', where: 'id = ?', whereArgs: [id]);
-  }
-
-  Future<void> deleteExpense(int id) async {
-    Database db = await database;
-    await db.delete('expenses', where: 'id = ?', whereArgs: [id]);
-  }
-
-  Future<List<Map<String, dynamic>>> getIncomesByCategory() async {
-    Database db = await database;
-    return await db.rawQuery('''
-      SELECT category, SUM(amount) as total
-      FROM incomes
-      GROUP BY category
-      ORDER BY total DESC
-    ''');
   }
 }

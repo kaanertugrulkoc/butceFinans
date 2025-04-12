@@ -31,16 +31,35 @@ class HomeController extends GetxController {
   }
 
   Future<void> loadData() async {
+    if (isLoading.value) return; // Eğer zaten yükleniyorsa tekrar yükleme
+
     isLoading.value = true;
     try {
-      totalIncome.value = await databaseService.getTotalIncome();
-      totalExpense.value = await databaseService.getTotalExpense();
-      incomesByCategory.value = await databaseService.getIncomesByCategory();
-      expensesByCategory.value = await databaseService.getExpensesByCategory();
-    } catch (e) {
+      // Toplam gelir ve gideri yükle
+      final totalIncomeResult = await databaseService.getTotalIncome();
+      final totalExpenseResult = await databaseService.getTotalExpense();
+
+      // Kategori bazlı verileri yükle
+      final incomeCategories = await databaseService.getIncomesByCategory();
+      final expenseCategories = await databaseService.getExpensesByCategory();
+
+      // Verileri güncelle
+      totalIncome.value = totalIncomeResult;
+      totalExpense.value = totalExpenseResult;
+      incomesByCategory.value = incomeCategories;
+      expensesByCategory.value = expenseCategories;
+
+      // Debug için verileri yazdır
+      print('Toplam Gelir: ${totalIncome.value}');
+      print('Toplam Gider: ${totalExpense.value}');
+      print('Gelir Kategorileri: $incomeCategories');
+      print('Gider Kategorileri: $expenseCategories');
+    } catch (e, stackTrace) {
+      print('Hata: $e');
+      print('Stack Trace: $stackTrace');
       Get.snackbar(
         'Hata',
-        'Veriler yüklenirken bir hata oluştu',
+        'Veriler yüklenirken bir hata oluştu: $e',
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
