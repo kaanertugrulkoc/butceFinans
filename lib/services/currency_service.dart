@@ -1,35 +1,24 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:xml/xml.dart';
 
 class CurrencyService {
-  static const String _tcmbUrl = 'https://www.tcmb.gov.tr/kurlar/today.xml';
+  static const String _exchangeRateUrl =
+      'https://api.exchangerate-api.com/v4/latest/USD';
+  static const String _goldApiUrl =
+      'https://api.exchangerate-api.com/v4/latest/XAU';
 
   Future<Map<String, dynamic>> getCurrencyRates() async {
     try {
-      final response = await http.get(Uri.parse(_tcmbUrl));
+      final response = await http.get(Uri.parse(_exchangeRateUrl));
       if (response.statusCode == 200) {
-        final document = XmlDocument.parse(response.body);
+        final data = json.decode(response.body);
+        final rates = data['rates'];
 
-        // USD kuru
-        final usdElement = document
-            .findAllElements('Currency')
-            .firstWhere((element) => element.getAttribute('Kod') == 'USD');
-        final usdRate = double.parse(usdElement
-            .findElements('ForexSelling')
-            .first
-            .text
-            .replaceAll(',', '.'));
+        // USD/TRY kuru
+        final usdRate = rates['TRY'];
 
-        // EUR kuru
-        final eurElement = document
-            .findAllElements('Currency')
-            .firstWhere((element) => element.getAttribute('Kod') == 'EUR');
-        final eurRate = double.parse(eurElement
-            .findElements('ForexSelling')
-            .first
-            .text
-            .replaceAll(',', '.'));
+        // EUR/TRY kuru (USD/TRY * USD/EUR)
+        final eurRate = rates['TRY'] / rates['EUR'];
 
         return {
           'usd': usdRate,
@@ -44,34 +33,29 @@ class CurrencyService {
 
   Future<double> getGoldPrice() async {
     try {
-      final response = await http.get(Uri.parse(_tcmbUrl));
-      if (response.statusCode == 200) {
-        final document = XmlDocument.parse(response.body);
+      // Önce altın fiyatını USD cinsinden al
+      final goldResponse = await http.get(Uri.parse(_goldApiUrl));
+      if (goldResponse.statusCode == 200) {
+        final goldData = json.decode(goldResponse.body);
+        final goldRateInUsd = goldData['rates']['USD'];
 
-        // Gram altın fiyatı
-        final goldElement = document
-            .findAllElements('Currency')
-            .firstWhere((element) => element.getAttribute('Kod') == 'GA');
+        // Sonra USD/TRY kurunu al
+        final currencyResponse = await http.get(Uri.parse(_exchangeRateUrl));
+        if (currencyResponse.statusCode == 200) {
+          final currencyData = json.decode(currencyResponse.body);
+          final usdToTry = currencyData['rates']['TRY'];
 
-        // Alış ve satış fiyatlarını al
-        final buyingPrice = double.parse(goldElement
-            .findElements('BanknoteBuying')
-            .first
-            .text
-            .replaceAll(',', '.'));
+          // Gram altın fiyatını hesapla (1 ons = 31.1034768 gram)
+          const gramsPerOunce = 31.1034768;
+          final goldPricePerGramInTry =
+              (goldRateInUsd * usdToTry) / gramsPerOunce;
 
-        final sellingPrice = double.parse(goldElement
-            .findElements('BanknoteSelling')
-            .first
-            .text
-            .replaceAll(',', '.'));
-
-        // Ortalama fiyatı döndür
-        return (buyingPrice + sellingPrice) / 2;
+          return goldPricePerGramInTry;
+        }
       }
       throw Exception('Altın fiyatı alınamadı');
     } catch (e) {
-      // TCMB API hatası durumunda yedek API'yi dene
+      // API hatası durumunda yedek API'yi dene
       return _getBackupGoldPrice();
     }
   }
@@ -79,8 +63,7 @@ class CurrencyService {
   Future<double> _getBackupGoldPrice() async {
     try {
       // Yedek API: Döviz kurları API'sinden USD/TRY kurunu al
-      final response = await http
-          .get(Uri.parse('https://api.exchangerate-api.com/v4/latest/USD'));
+      final response = await http.get(Uri.parse(_exchangeRateUrl));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final usdToTry = data['rates']['TRY'];
