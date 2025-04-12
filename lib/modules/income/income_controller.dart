@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import '../../services/database_service.dart';
 
 class IncomeController extends GetxController {
+  final amountController = TextEditingController();
+  final descriptionController = TextEditingController();
+  final categoryController = TextEditingController();
   final databaseService = DatabaseService();
 
   final incomes = <Map<String, dynamic>>[].obs;
   final isLoading = false.obs;
   final totalIncome = 0.0.obs;
-  final amountController = TextEditingController();
-  final descriptionController = TextEditingController();
-  final selectedCategory = 'Maaş'.obs;
+  final categories = ['Maaş', 'Yatırım', 'Freelance', 'Diğer'].obs;
 
   @override
   void onInit() {
@@ -22,6 +23,7 @@ class IncomeController extends GetxController {
   void onClose() {
     amountController.dispose();
     descriptionController.dispose();
+    categoryController.dispose();
     super.onClose();
   }
 
@@ -37,47 +39,38 @@ class IncomeController extends GetxController {
   }
 
   Future<void> addIncome() async {
-    if (amountController.text.isEmpty) {
-      Get.snackbar(
-        'Hata',
-        'Lütfen miktar giriniz',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
-
-    try {
+    if (amountController.text.isNotEmpty &&
+        categoryController.text.isNotEmpty) {
       final income = {
         'amount': double.parse(amountController.text),
         'description': descriptionController.text,
-        'category': selectedCategory.value,
-        'date': DateTime.now().toIso8601String(),
+        'category': categoryController.text,
+        'date': DateTime.now().toString().split(' ')[0],
       };
 
       await databaseService.insertIncome(income);
+
+      // Form temizleme
       amountController.clear();
       descriptionController.clear();
-      selectedCategory.value = 'Maaş';
-      loadIncomes();
-    } catch (e) {
-      Get.snackbar(
-        'Hata',
-        'Gelir eklenirken bir hata oluştu',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      categoryController.clear();
+
+      // Listeyi güncelle
+      await loadIncomes();
     }
   }
 
   String formatDate(String dateStr) {
-    try {
-      final date = DateTime.parse(dateStr);
-      return '${date.day}/${date.month}/${date.year}';
-    } catch (e) {
-      return dateStr;
-    }
+    final date = DateTime.parse(dateStr);
+    return '${date.day}/${date.month}/${date.year}';
   }
 
   void showAddIncomeDialog(BuildContext context) {
+    final amountController = TextEditingController();
+    final descriptionController = TextEditingController();
+    final categoryController = TextEditingController();
+    final categories = ['Maaş', 'Yatırım', 'Freelance', 'Diğer'];
+
     Get.dialog(
       AlertDialog(
         title: const Text('Yeni Gelir Ekle'),
@@ -91,6 +84,23 @@ class IncomeController extends GetxController {
                 labelText: 'Gelir Miktarı',
                 prefixText: '₺',
               ),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                labelText: 'Kategori',
+              ),
+              items: categories.map((String category) {
+                return DropdownMenuItem<String>(
+                  value: category,
+                  child: Text(category),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  categoryController.text = newValue;
+                }
+              },
             ),
             const SizedBox(height: 16),
             TextField(
@@ -108,22 +118,16 @@ class IncomeController extends GetxController {
           ),
           ElevatedButton(
             onPressed: () async {
-              if (amountController.text.isNotEmpty) {
-                try {
-                  await databaseService.insertIncome({
-                    'amount': double.parse(amountController.text),
-                    'description': descriptionController.text,
-                    'date': DateTime.now().toIso8601String(),
-                  });
-                  await loadIncomes();
-                  Get.back();
-                } catch (e) {
-                  Get.snackbar(
-                    'Hata',
-                    'Gelir eklenirken bir hata oluştu',
-                    snackPosition: SnackPosition.BOTTOM,
-                  );
-                }
+              if (amountController.text.isNotEmpty &&
+                  categoryController.text.isNotEmpty) {
+                await databaseService.insertIncome({
+                  'amount': double.parse(amountController.text),
+                  'description': descriptionController.text,
+                  'category': categoryController.text,
+                  'date': DateTime.now().toIso8601String(),
+                });
+                await loadIncomes();
+                Get.back();
               }
             },
             child: const Text('Ekle'),
@@ -132,4 +136,18 @@ class IncomeController extends GetxController {
       ),
     );
   }
+}
+
+class Income {
+  final double amount;
+  final String description;
+  final String category;
+  final String date;
+
+  Income({
+    required this.amount,
+    required this.description,
+    required this.category,
+    required this.date,
+  });
 }
