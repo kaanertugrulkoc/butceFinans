@@ -41,7 +41,7 @@ class DatabaseService {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         amount REAL NOT NULL,
         description TEXT,
-        category TEXT NOT NULL,
+        category TEXT,
         date TEXT NOT NULL
       )
     ''');
@@ -50,27 +50,12 @@ class DatabaseService {
   // Gelir işlemleri
   Future<int> insertIncome(Map<String, dynamic> income) async {
     Database db = await database;
-    return await db.insert('incomes', {
-      'amount': income['amount'],
-      'description': income['description'] ?? '',
-      'date': income['date'],
-    });
+    return await db.insert('incomes', income);
   }
 
   Future<List<Map<String, dynamic>>> getIncomes() async {
     Database db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'incomes',
-      orderBy: 'date DESC',
-    );
-    return List.generate(maps.length, (i) {
-      return {
-        'id': maps[i]['id'],
-        'amount': maps[i]['amount'] as double,
-        'description': maps[i]['description'] as String,
-        'date': maps[i]['date'] as String,
-      };
-    });
+    return await db.query('incomes', orderBy: 'date DESC');
   }
 
   Future<double> getTotalIncome() async {
@@ -94,29 +79,12 @@ class DatabaseService {
   // Gider işlemleri
   Future<int> insertExpense(Map<String, dynamic> expense) async {
     Database db = await database;
-    return await db.insert('expenses', {
-      'amount': expense['amount'],
-      'description': expense['description'] ?? '',
-      'category': expense['category'],
-      'date': expense['date'],
-    });
+    return await db.insert('expenses', expense);
   }
 
   Future<List<Map<String, dynamic>>> getExpenses() async {
     Database db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'expenses',
-      orderBy: 'date DESC',
-    );
-    return List.generate(maps.length, (i) {
-      return {
-        'id': maps[i]['id'],
-        'amount': maps[i]['amount'] as double,
-        'description': maps[i]['description'] as String,
-        'category': maps[i]['category'] as String,
-        'date': maps[i]['date'] as String,
-      };
-    });
+    return await db.query('expenses', orderBy: 'date DESC');
   }
 
   Future<double> getTotalExpense() async {
@@ -174,5 +142,15 @@ class DatabaseService {
       {'type': 'income', 'data': incomes},
       {'type': 'expense', 'data': expenses},
     ];
+  }
+
+  Future<void> deleteIncome(int id) async {
+    Database db = await database;
+    await db.delete('incomes', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<void> deleteExpense(int id) async {
+    Database db = await database;
+    await db.delete('expenses', where: 'id = ?', whereArgs: [id]);
   }
 }

@@ -20,6 +20,12 @@ class TransactionsController extends GetxController {
     try {
       incomes.value = await databaseService.getIncomes();
       expenses.value = await databaseService.getExpenses();
+    } catch (e) {
+      Get.snackbar(
+        'Hata',
+        'Veriler yüklenirken bir hata oluştu',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -29,8 +35,34 @@ class TransactionsController extends GetxController {
     selectedTab.value = index;
   }
 
-  String formatDate(String dateStr) {
-    final date = DateTime.parse(dateStr);
-    return '${date.day}/${date.month}/${date.year}';
+  String formatDate(String date) {
+    final dateTime = DateTime.parse(date);
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+  }
+
+  Future<void> deleteIncome(int id) async {
+    try {
+      await databaseService.deleteIncome(id);
+      await loadTransactions();
+    } catch (e) {
+      Get.snackbar(
+        'Hata',
+        'Gelir silinirken bir hata oluştu',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  Future<void> deleteExpense(int id) async {
+    try {
+      await databaseService.deleteExpense(id);
+      await loadTransactions();
+    } catch (e) {
+      Get.snackbar(
+        'Hata',
+        'Gider silinirken bir hata oluştu',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 }
