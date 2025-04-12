@@ -11,7 +11,15 @@ class IncomeController extends GetxController {
   final incomes = <Map<String, dynamic>>[].obs;
   final isLoading = false.obs;
   final totalIncome = 0.0.obs;
-  final categories = ['Maaş', 'Yatırım', 'Freelance', 'Diğer'].obs;
+  final categories = [
+    'Maaş',
+    'Mesai',
+    'Yatırım',
+    'Kira',
+    'İkramiye',
+    'Ek Gelir',
+    'Diğer',
+  ].obs;
 
   @override
   void onInit() {
@@ -69,7 +77,15 @@ class IncomeController extends GetxController {
     final amountController = TextEditingController();
     final descriptionController = TextEditingController();
     final categoryController = TextEditingController();
-    final categories = ['Maaş', 'Yatırım', 'Freelance', 'Diğer'];
+    final categories = [
+      'Maaş',
+      'Mesai',
+      'Yatırım',
+      'Kira',
+      'İkramiye',
+      'Ek Gelir',
+      'Diğer'
+    ];
 
     Get.dialog(
       AlertDialog(
