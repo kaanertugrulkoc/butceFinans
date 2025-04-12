@@ -21,16 +21,16 @@ class HomePage extends StatelessWidget {
             }
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildSummaryCard(controller),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 5),
                   _buildPieChart(controller),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 5),
                   _buildCategoryTabs(controller),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 5),
                   _buildMenuGrid(),
                 ],
               ),
