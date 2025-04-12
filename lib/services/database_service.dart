@@ -1,5 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
@@ -64,36 +66,31 @@ class DatabaseService {
   }
 
   // Gelir işlemleri
-  Future<int> insertIncome(Map<String, dynamic> income) async {
+  Future<void> insertIncome(Map<String, dynamic> income) async {
     try {
       final db = await database;
-
-      // Veri doğrulama
-      if (income['amount'] == null) {
-        throw Exception('Miktar alanı boş olamaz');
-      }
-
       final now = DateTime.now();
-
-      // Veriyi hazırla
-      final incomeData = {
-        'amount': double.parse(income['amount'].toString()),
-        'description': income['description']?.toString() ?? '',
-        'category': income['category']?.toString() ?? 'Diğer',
-        'date': income['date']?.toString() ?? now.toIso8601String(),
-        'month': now.month,
-        'year': now.year,
+      final data = {
+        'amount': income['amount'],
+        'description': income['description'] ?? '',
+        'category': income['category'],
+        'date': income['date'] ?? now.toIso8601String(),
+        'month': income['month'] ?? now.month,
+        'year': income['year'] ?? now.year,
       };
 
-      print('Eklenecek gelir verisi: $incomeData');
-
-      final result = await db.insert('incomes', incomeData);
-      print('Gelir eklendi, ID: $result');
-      return result;
-    } catch (e, stackTrace) {
-      print('Gelir ekleme hatası: $e');
-      print('Stack Trace: $stackTrace');
-      rethrow;
+      await db.insert('incomes', data);
+      print('Gelir başarıyla eklendi: $data');
+    } catch (e) {
+      print('Gelir eklenirken hata oluştu: $e');
+      // Hata durumunda kullanıcıya bilgi ver
+      Get.snackbar(
+        'Hata',
+        'Gelir eklenirken bir hata oluştu. Lütfen tekrar deneyin.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -154,36 +151,31 @@ class DatabaseService {
   }
 
   // Gider işlemleri
-  Future<int> insertExpense(Map<String, dynamic> expense) async {
+  Future<void> insertExpense(Map<String, dynamic> expense) async {
     try {
       final db = await database;
-
-      // Veri doğrulama
-      if (expense['amount'] == null) {
-        throw Exception('Miktar alanı boş olamaz');
-      }
-
       final now = DateTime.now();
-
-      // Veriyi hazırla
-      final expenseData = {
-        'amount': double.parse(expense['amount'].toString()),
-        'description': expense['description']?.toString() ?? '',
-        'category': expense['category']?.toString() ?? 'Diğer',
-        'date': expense['date']?.toString() ?? now.toIso8601String(),
-        'month': now.month,
-        'year': now.year,
+      final data = {
+        'amount': expense['amount'],
+        'description': expense['description'] ?? '',
+        'category': expense['category'],
+        'date': expense['date'] ?? now.toIso8601String(),
+        'month': expense['month'] ?? now.month,
+        'year': expense['year'] ?? now.year,
       };
 
-      print('Eklenecek gider verisi: $expenseData');
-
-      final result = await db.insert('expenses', expenseData);
-      print('Gider eklendi, ID: $result');
-      return result;
-    } catch (e, stackTrace) {
-      print('Gider ekleme hatası: $e');
-      print('Stack Trace: $stackTrace');
-      rethrow;
+      await db.insert('expenses', data);
+      print('Gider başarıyla eklendi: $data');
+    } catch (e) {
+      print('Gider eklenirken hata oluştu: $e');
+      // Hata durumunda kullanıcıya bilgi ver
+      Get.snackbar(
+        'Hata',
+        'Gider eklenirken bir hata oluştu. Lütfen tekrar deneyin.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 

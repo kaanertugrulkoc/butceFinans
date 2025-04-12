@@ -16,13 +16,30 @@ class _TransactionFormState extends State<TransactionForm> {
   final _categoryController = TextEditingController();
   bool _isIncome = true;
 
+  // Ay ve yıl seçimi için değişkenler
+  late int _selectedMonth;
+  late int _selectedYear;
+
+  // Türkçe ay isimleri
+  final List<String> _monthNames = [
+    'Ocak',
+    'Şubat',
+    'Mart',
+    'Nisan',
+    'Mayıs',
+    'Haziran',
+    'Temmuz',
+    'Ağustos',
+    'Eylül',
+    'Ekim',
+    'Kasım',
+    'Aralık'
+  ];
+
   final List<String> _incomeCategories = [
     'Maaş',
-    'Mesai',
     'Yatırım',
-    'Kira',
-    'İkramiye',
-    'Ek Gelir',
+    'Freelance',
     'Diğer',
   ];
 
@@ -35,6 +52,14 @@ class _TransactionFormState extends State<TransactionForm> {
     'Eğlence',
     'Diğer',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _selectedMonth = now.month;
+    _selectedYear = now.year;
+  }
 
   @override
   void dispose() {
@@ -51,7 +76,9 @@ class _TransactionFormState extends State<TransactionForm> {
         'amount': double.parse(_amountController.text),
         'description': _descriptionController.text,
         'category': _categoryController.text,
-        'date': DateTime.now().toIso8601String(),
+        'date': DateTime(_selectedYear, _selectedMonth).toIso8601String(),
+        'month': _selectedMonth,
+        'year': _selectedYear,
       };
 
       if (_isIncome) {
@@ -106,11 +133,68 @@ class _TransactionFormState extends State<TransactionForm> {
                 ],
               ),
               const SizedBox(height: 16),
+              // Ay seçimi
+              DropdownButtonFormField<int>(
+                value: _selectedMonth,
+                decoration: const InputDecoration(
+                  labelText: 'Ay',
+                  border: OutlineInputBorder(),
+                ),
+                items: List.generate(12, (index) => index + 1)
+                    .map((month) => DropdownMenuItem(
+                          value: month,
+                          child: Text(_monthNames[month - 1]),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      _selectedMonth = value;
+                    });
+                  }
+                },
+                validator: (value) {
+                  if (value == null) {
+                    return 'Lütfen bir ay seçin';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              // Yıl seçimi
+              DropdownButtonFormField<int>(
+                value: _selectedYear,
+                decoration: const InputDecoration(
+                  labelText: 'Yıl',
+                  border: OutlineInputBorder(),
+                ),
+                items: List.generate(5, (index) => DateTime.now().year - index)
+                    .map((year) => DropdownMenuItem(
+                          value: year,
+                          child: Text('$year'),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      _selectedYear = value;
+                    });
+                  }
+                },
+                validator: (value) {
+                  if (value == null) {
+                    return 'Lütfen bir yıl seçin';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _amountController,
                 decoration: const InputDecoration(
                   labelText: 'Miktar',
                   prefixText: '₺',
+                  border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
                 validator: (value) {
@@ -128,6 +212,7 @@ class _TransactionFormState extends State<TransactionForm> {
                 controller: _descriptionController,
                 decoration: const InputDecoration(
                   labelText: 'Açıklama (Opsiyonel)',
+                  border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 16),
@@ -137,6 +222,7 @@ class _TransactionFormState extends State<TransactionForm> {
                     : _categoryController.text,
                 decoration: const InputDecoration(
                   labelText: 'Kategori',
+                  border: OutlineInputBorder(),
                 ),
                 items: (_isIncome ? _incomeCategories : _expenseCategories)
                     .map((category) => DropdownMenuItem(
@@ -159,6 +245,9 @@ class _TransactionFormState extends State<TransactionForm> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _submitForm,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
+                ),
                 child: const Text('Kaydet'),
               ),
             ],
