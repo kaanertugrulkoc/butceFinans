@@ -114,12 +114,12 @@ class DatabaseService {
     List<dynamic> whereArgs = [];
 
     if (month != null && year != null) {
-      whereClause = 'WHERE month = ? AND year = ?';
+      whereClause = 'month = ? AND year = ?';
       whereArgs = [month, year];
     }
 
     final result = await db.rawQuery(
-      'SELECT SUM(amount) as total FROM incomes $whereClause',
+      'SELECT SUM(amount) as total FROM incomes${whereClause.isNotEmpty ? ' WHERE $whereClause' : ''}',
       whereArgs,
     );
     return result.first['total'] as double? ?? 0.0;
@@ -132,14 +132,14 @@ class DatabaseService {
     List<dynamic> whereArgs = [];
 
     if (month != null && year != null) {
-      whereClause = 'WHERE month = ? AND year = ?';
+      whereClause = 'month = ? AND year = ?';
       whereArgs = [month, year];
     }
 
     return await db.rawQuery('''
       SELECT category, SUM(amount) as total
       FROM incomes
-      $whereClause
+      ${whereClause.isNotEmpty ? 'WHERE $whereClause' : ''}
       GROUP BY category
       ORDER BY total DESC
     ''', whereArgs);
@@ -206,12 +206,12 @@ class DatabaseService {
     List<dynamic> whereArgs = [];
 
     if (month != null && year != null) {
-      whereClause = 'WHERE month = ? AND year = ?';
+      whereClause = 'month = ? AND year = ?';
       whereArgs = [month, year];
     }
 
     final result = await db.rawQuery(
-      'SELECT SUM(amount) as total FROM expenses $whereClause',
+      'SELECT SUM(amount) as total FROM expenses${whereClause.isNotEmpty ? ' WHERE $whereClause' : ''}',
       whereArgs,
     );
     return result.first['total'] as double? ?? 0.0;
@@ -224,14 +224,14 @@ class DatabaseService {
     List<dynamic> whereArgs = [];
 
     if (month != null && year != null) {
-      whereClause = 'WHERE month = ? AND year = ?';
+      whereClause = 'month = ? AND year = ?';
       whereArgs = [month, year];
     }
 
     return await db.rawQuery('''
       SELECT category, SUM(amount) as total
       FROM expenses
-      $whereClause
+      ${whereClause.isNotEmpty ? 'WHERE $whereClause' : ''}
       GROUP BY category
       ORDER BY total DESC
     ''', whereArgs);

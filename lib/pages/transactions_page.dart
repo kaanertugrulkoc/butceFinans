@@ -6,92 +6,116 @@ import '../widgets/transaction_list.dart';
 import '../widgets/transaction_form.dart';
 
 class TransactionsPage extends StatelessWidget {
-  const TransactionsPage({super.key});
+  final TransactionsController _controller = Get.put(TransactionsController());
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<TransactionsController>();
-
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('İşlemler'),
-          bottom: TabBar(
-            tabs: const [
-              Tab(text: 'Gelirler'),
-              Tab(text: 'Giderler'),
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(120),
+          child: Column(
+            children: [
+              TabBar(
+                tabs: [
+                  Tab(text: 'Gelirler'),
+                  Tab(text: 'Giderler'),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Obx(() => DropdownButton<int>(
+                          value: _controller.selectedMonth.value,
+                          items: List.generate(12, (index) => index + 1)
+                              .map((month) => DropdownMenuItem(
+                                    value: month,
+                                    child: Text('$month. Ay'),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              _controller.setSelectedMonth(value);
+                            }
+                          },
+                        )),
+                    Obx(() => DropdownButton<int>(
+                          value: _controller.selectedYear.value,
+                          items: List.generate(
+                                  5, (index) => DateTime.now().year - index)
+                              .map((year) => DropdownMenuItem(
+                                    value: year,
+                                    child: Text('$year'),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              _controller.setSelectedYear(value);
+                            }
+                          },
+                        )),
+                  ],
+                ),
+              ),
             ],
-            onTap: (index) {
-              controller.loadTransactions();
-              controller.loadCategoryAnalyses();
-            },
           ),
         ),
         body: TabBarView(
           children: [
-            // Gelirler Tab
-            RefreshIndicator(
-              onRefresh: () async {
-                await controller.loadTransactions();
-                await controller.loadCategoryAnalyses();
-              },
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  children: [
-                    Obx(() => CategoryAnalysis(
-                          title: 'Gelir Kategorileri',
-                          categories: controller.incomeCategories,
-                          total: controller.totalIncome.value,
-                        )),
-                    const SizedBox(height: 16),
-                    Obx(() => TransactionList(
-                          transactions: controller.incomes,
-                          isIncome: true,
-                          onDelete: controller.deleteIncome,
-                        )),
-                  ],
-                ),
-              ),
-            ),
-            // Giderler Tab
-            RefreshIndicator(
-              onRefresh: () async {
-                await controller.loadTransactions();
-                await controller.loadCategoryAnalyses();
-              },
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  children: [
-                    Obx(() => CategoryAnalysis(
-                          title: 'Gider Kategorileri',
-                          categories: controller.expenseCategories,
-                          total: controller.totalExpense.value,
-                        )),
-                    const SizedBox(height: 16),
-                    Obx(() => TransactionList(
-                          transactions: controller.expenses,
-                          isIncome: false,
-                          onDelete: controller.deleteExpense,
-                        )),
-                  ],
-                ),
-              ),
-            ),
+            _buildIncomeTab(),
+            _buildExpenseTab(),
           ],
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            showModalBottomSheet(
-              context: context,
+            Get.bottomSheet(
+              TransactionForm(),
               isScrollControlled: true,
-              builder: (context) => const TransactionForm(),
             );
           },
-          child: const Icon(Icons.add),
+          child: Icon(Icons.add),
         ),
+      ),
+    );
+  }
+
+  Widget _buildIncomeTab() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Obx(() => CategoryAnalysis(
+                categories: _controller.incomeCategories,
+                total: _controller.totalIncome.value,
+                isIncome: true,
+              )),
+          Obx(() => TransactionList(
+                transactions: _controller.incomes,
+                isIncome: true,
+                onDelete: _controller.deleteIncome,
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExpenseTab() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Obx(() => CategoryAnalysis(
+                categories: _controller.expenseCategories,
+                total: _controller.totalExpense.value,
+                isIncome: false,
+              )),
+          Obx(() => TransactionList(
+                transactions: _controller.expenses,
+                isIncome: false,
+                onDelete: _controller.deleteExpense,
+              )),
+        ],
       ),
     );
   }

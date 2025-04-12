@@ -53,10 +53,9 @@ class TransactionsController extends GetxController {
         year: selectedYear.value,
       );
     } catch (e) {
-      print('İşlemler yüklenirken hata oluştu: $e');
       Get.snackbar(
         'Hata',
-        'İşlemler yüklenirken bir hata oluştu. Lütfen tekrar deneyin.',
+        'İşlemler yüklenirken bir hata oluştu',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -66,24 +65,18 @@ class TransactionsController extends GetxController {
 
   Future<void> loadCategoryAnalyses() async {
     try {
-      final loadedIncomeCategories =
-          await _databaseService.getIncomesByCategory(
+      incomeCategories.value = await _databaseService.getIncomesByCategory(
         month: selectedMonth.value,
         year: selectedYear.value,
       );
-      final loadedExpenseCategories =
-          await _databaseService.getExpensesByCategory(
+      expenseCategories.value = await _databaseService.getExpensesByCategory(
         month: selectedMonth.value,
         year: selectedYear.value,
       );
-
-      incomeCategories.value = loadedIncomeCategories;
-      expenseCategories.value = loadedExpenseCategories;
     } catch (e) {
-      print('Kategori analizleri yüklenirken hata oluştu: $e');
       Get.snackbar(
         'Hata',
-        'Kategori analizleri yüklenirken bir hata oluştu. Lütfen tekrar deneyin.',
+        'Kategori analizleri yüklenirken bir hata oluştu',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -116,10 +109,9 @@ class TransactionsController extends GetxController {
         colorText: Colors.white,
       );
     } catch (e) {
-      print('Gelir eklenirken hata oluştu: $e');
       Get.snackbar(
         'Hata',
-        'Gelir eklenirken bir hata oluştu. Lütfen tekrar deneyin.',
+        'Gelir eklenirken bir hata oluştu',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -140,10 +132,9 @@ class TransactionsController extends GetxController {
         colorText: Colors.white,
       );
     } catch (e) {
-      print('Gider eklenirken hata oluştu: $e');
       Get.snackbar(
         'Hata',
-        'Gider eklenirken bir hata oluştu. Lütfen tekrar deneyin.',
+        'Gider eklenirken bir hata oluştu',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -164,10 +155,9 @@ class TransactionsController extends GetxController {
         colorText: Colors.white,
       );
     } catch (e) {
-      print('Gelir silinirken hata oluştu: $e');
       Get.snackbar(
         'Hata',
-        'Gelir silinirken bir hata oluştu. Lütfen tekrar deneyin.',
+        'Gelir silinirken bir hata oluştu',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -188,10 +178,9 @@ class TransactionsController extends GetxController {
         colorText: Colors.white,
       );
     } catch (e) {
-      print('Gider silinirken hata oluştu: $e');
       Get.snackbar(
         'Hata',
-        'Gider silinirken bir hata oluştu. Lütfen tekrar deneyin.',
+        'Gider silinirken bir hata oluştu',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
