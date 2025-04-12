@@ -8,6 +8,8 @@ import '../modules/login/login_bindings.dart';
 import '../modules/login/login_page.dart';
 import '../modules/income/income_binding.dart';
 import '../modules/income/income_page.dart';
+import '../modules/expense/expense_binding.dart';
+import '../modules/expense/expense_page.dart';
 
 abstract class AppRouters {
   static const INITIAL = SPLASH;
@@ -16,6 +18,7 @@ abstract class AppRouters {
   static const HOME = '/home';
   static const PROFILE = '/profil';
   static const INCOME = '/income';
+  static const EXPENSE = '/expense';
 }
 
 class AppPages {
@@ -39,6 +42,11 @@ class AppPages {
       name: AppRouters.INCOME,
       page: () => const IncomePage(),
       binding: IncomeBinding(),
+    ),
+    GetPage(
+      name: AppRouters.EXPENSE,
+      page: () => const ExpensePage(),
+      binding: ExpenseBinding(),
     )
   ];
 }

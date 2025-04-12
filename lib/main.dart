@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'B Ü T Ç E',
       getPages: AppPages.pages,
-      initialRoute: AppRouters.INCOME,
+      initialRoute: AppRouters.HOME,
       initialBinding: AppBindings(),
     );
   }
