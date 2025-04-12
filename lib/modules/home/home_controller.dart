@@ -29,6 +29,12 @@ class HomeController extends GetxController {
       totalIncome.value = await databaseService.getTotalIncome();
       totalExpense.value = await databaseService.getTotalExpense();
       last30DaysData.value = await databaseService.getLast30DaysData();
+    } catch (e) {
+      Get.snackbar(
+        'Hata',
+        'Veriler yüklenirken bir hata oluştu',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       isLoading.value = false;
     }
