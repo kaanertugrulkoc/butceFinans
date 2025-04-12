@@ -3,10 +3,9 @@ import '../../services/database_service.dart';
 
 class HomeController extends GetxController {
   final databaseService = DatabaseService();
-
+  final isLoading = false.obs;
   final totalIncome = 0.0.obs;
   final totalExpense = 0.0.obs;
-  final isLoading = false.obs;
   final expensesByCategory = <Map<String, dynamic>>[].obs;
   final incomesByCategory = <Map<String, dynamic>>[].obs;
   final selectedCategoryTab = 0.obs;

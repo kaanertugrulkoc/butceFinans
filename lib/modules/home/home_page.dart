@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:bitirme_projesi_app/modules/income/income_page.dart';
+import 'package:bitirme_projesi_app/modules/expense/expense_page.dart';
+import 'package:bitirme_projesi_app/modules/category_analysis/category_analysis_page.dart';
 import 'home_controller.dart';
 
 class HomePage extends StatefulWidget {
@@ -399,13 +402,19 @@ class _HomePageState extends State<HomePage> {
               'Gelir Ekle',
               Icons.attach_money,
               Colors.green,
-              '/income',
+              () => Get.to(() => IncomePage()),
             ),
             _buildMenuButton(
               'Gider Ekle',
               Icons.money_off,
               Colors.red,
-              '/expense',
+              () => Get.to(() => ExpensePage()),
+            ),
+            _buildMenuButton(
+              'Kategori Analizi',
+              Icons.analytics_outlined,
+              Colors.blue,
+              () => Get.to(() => CategoryAnalysisPage()),
             ),
           ],
         ),
@@ -414,9 +423,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildMenuButton(
-      String title, IconData icon, Color color, String route) {
+    String title,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
     return InkWell(
-      onTap: () => Get.toNamed(route),
+      onTap: onTap,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
