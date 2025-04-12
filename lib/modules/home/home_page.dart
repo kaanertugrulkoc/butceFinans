@@ -411,7 +411,7 @@ class _HomePageState extends State<HomePage> {
               () => Get.to(() => ExpensePage()),
             ),
             _buildMenuButton(
-              'Kategori Analizi',
+              'Varlıklarım',
               Icons.analytics_outlined,
               Colors.blue,
               () => Get.to(() => CategoryAnalysisPage()),

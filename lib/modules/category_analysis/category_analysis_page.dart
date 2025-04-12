@@ -16,7 +16,7 @@ class CategoryAnalysisPage extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Kategori Analizi'),
+          title: const Text('Varlıklarım'),
           bottom: const TabBar(
             tabs: [
               Tab(text: 'Gelirler'),
@@ -87,28 +87,53 @@ class CategoryAnalysisPage extends StatelessWidget {
 
         if (snapshot.hasError) {
           return Center(
-            child: Text('Hata: ${snapshot.error}'),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                const SizedBox(height: 16),
+                Text(
+                  'Veriler yüklenirken bir hata oluştu:\n${snapshot.error}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.red),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    // Sayfayı yeniden yükle
+                    Get.off(() => CategoryAnalysisPage());
+                  },
+                  child: const Text('Tekrar Dene'),
+                ),
+              ],
+            ),
           );
         }
 
         final currencyRates = snapshot.data![0] as Map<String, dynamic>;
         final goldPrice = snapshot.data![1] as double;
 
-        return ListView(
-          children: [
-            ListTile(
-              title: const Text('Dolar (USD)'),
-              trailing: Text('₺${currencyRates['usd'].toStringAsFixed(2)}'),
-            ),
-            ListTile(
-              title: const Text('Euro (EUR)'),
-              trailing: Text('₺${currencyRates['eur'].toStringAsFixed(2)}'),
-            ),
-            ListTile(
-              title: const Text('Gram Altın'),
-              trailing: Text('₺${goldPrice.toStringAsFixed(2)}'),
-            ),
-          ],
+        return RefreshIndicator(
+          onRefresh: () async {
+            // Sayfayı yeniden yükle
+            Get.off(() => CategoryAnalysisPage());
+          },
+          child: ListView(
+            children: [
+              ListTile(
+                title: const Text('Dolar (USD)'),
+                trailing: Text('₺${currencyRates['usd'].toStringAsFixed(2)}'),
+              ),
+              ListTile(
+                title: const Text('Euro (EUR)'),
+                trailing: Text('₺${currencyRates['eur'].toStringAsFixed(2)}'),
+              ),
+              ListTile(
+                title: const Text('Gram Altın'),
+                trailing: Text('₺${goldPrice.toStringAsFixed(2)}'),
+              ),
+            ],
+          ),
         );
       },
     );
