@@ -15,6 +15,7 @@ abstract class AppRouters {
   static const LOGIN = '/login';
   static const HOME = '/home';
   static const PROFILE = '/profil';
+  static const INCOME = '/income';
 }
 
 class AppPages {
@@ -35,7 +36,7 @@ class AppPages {
       binding: HomeBindings(),
     ),
     GetPage(
-      name: '/income',
+      name: AppRouters.INCOME,
       page: () => const IncomePage(),
       binding: IncomeBinding(),
     )
