@@ -41,6 +41,14 @@ class IncomeController extends GetxController {
       final data = await databaseService.getIncomes();
       incomes.value = data;
       totalIncome.value = await databaseService.getTotalIncome();
+    } catch (e) {
+      Get.snackbar(
+        'Hata',
+        'Gelirler yüklenirken bir hata oluştu',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }
