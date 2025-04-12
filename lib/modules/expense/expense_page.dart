@@ -8,6 +8,11 @@ class ExpensePage extends GetView<ExpenseController> {
 
   @override
   Widget build(BuildContext context) {
+    // Manuel olarak controller'ı kaydet
+    if (!Get.isRegistered<ExpenseController>()) {
+      Get.put(ExpenseController());
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Giderler'),

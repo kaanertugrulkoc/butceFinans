@@ -8,6 +8,11 @@ class IncomePage extends GetView<IncomeController> {
 
   @override
   Widget build(BuildContext context) {
+    // Manuel olarak controller'ı kaydet
+    if (!Get.isRegistered<IncomeController>()) {
+      Get.put(IncomeController());
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Gelirler'),
