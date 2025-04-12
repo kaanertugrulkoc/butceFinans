@@ -24,6 +24,11 @@ class HomeController extends GetxController {
     });
   }
 
+  @override
+  void onClose() {
+    super.onClose();
+  }
+
   Future<void> loadData() async {
     isLoading.value = true;
     try {
