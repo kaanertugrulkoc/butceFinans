@@ -7,5 +7,3 @@ Ev ekonomisini analiz edip takip edebileceğiniz bir gelir-gider bilanço uygula
 
 
 ![img.png](img.png)
-
-![img.jpg](assets/images/img.jpg)
