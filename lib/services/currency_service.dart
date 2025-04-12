@@ -1,23 +1,35 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:xml/xml.dart';
 
 class CurrencyService {
-  static const String _dovizUrl =
-      'https://api.doviz.com/api/v1/currencies/all/latest';
+  static const String _tcmbUrl = 'https://www.tcmb.gov.tr/kurlar/today.xml';
 
   Future<Map<String, dynamic>> getCurrencyRates() async {
     try {
-      final response = await http.get(Uri.parse(_dovizUrl));
+      final response = await http.get(Uri.parse(_tcmbUrl));
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
+        final document = XmlDocument.parse(response.body);
 
         // USD kuru
-        final usdData = data.firstWhere((item) => item['code'] == 'USD');
-        final usdRate = double.parse(usdData['selling'].toString());
+        final usdElement = document
+            .findAllElements('Currency')
+            .firstWhere((element) => element.getAttribute('Kod') == 'USD');
+        final usdRate = double.parse(usdElement
+            .findElements('ForexSelling')
+            .first
+            .text
+            .replaceAll(',', '.'));
 
         // EUR kuru
-        final eurData = data.firstWhere((item) => item['code'] == 'EUR');
-        final eurRate = double.parse(eurData['selling'].toString());
+        final eurElement = document
+            .findAllElements('Currency')
+            .firstWhere((element) => element.getAttribute('Kod') == 'EUR');
+        final eurRate = double.parse(eurElement
+            .findElements('ForexSelling')
+            .first
+            .text
+            .replaceAll(',', '.'));
 
         return {
           'usd': usdRate,
@@ -32,19 +44,34 @@ class CurrencyService {
 
   Future<double> getGoldPrice() async {
     try {
-      final response = await http.get(Uri.parse(_dovizUrl));
+      final response = await http.get(Uri.parse(_tcmbUrl));
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
+        final document = XmlDocument.parse(response.body);
 
         // Gram altın fiyatı
-        final goldData = data.firstWhere((item) => item['code'] == 'GOLD');
-        final goldRate = double.parse(goldData['selling'].toString());
+        final goldElement = document
+            .findAllElements('Currency')
+            .firstWhere((element) => element.getAttribute('Kod') == 'GA');
 
-        return goldRate;
+        // Alış ve satış fiyatlarını al
+        final buyingPrice = double.parse(goldElement
+            .findElements('BanknoteBuying')
+            .first
+            .text
+            .replaceAll(',', '.'));
+
+        final sellingPrice = double.parse(goldElement
+            .findElements('BanknoteSelling')
+            .first
+            .text
+            .replaceAll(',', '.'));
+
+        // Ortalama fiyatı döndür
+        return (buyingPrice + sellingPrice) / 2;
       }
       throw Exception('Altın fiyatı alınamadı');
     } catch (e) {
-      // Doviz.com API hatası durumunda yedek API'yi dene
+      // TCMB API hatası durumunda yedek API'yi dene
       return _getBackupGoldPrice();
     }
   }
