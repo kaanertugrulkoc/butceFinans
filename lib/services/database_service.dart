@@ -31,6 +31,7 @@ class DatabaseService {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         amount REAL NOT NULL,
         description TEXT,
+        category TEXT,
         date TEXT NOT NULL
       )
     ''');
@@ -152,5 +153,15 @@ class DatabaseService {
   Future<void> deleteExpense(int id) async {
     Database db = await database;
     await db.delete('expenses', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<List<Map<String, dynamic>>> getIncomesByCategory() async {
+    Database db = await database;
+    return await db.rawQuery('''
+      SELECT category, SUM(amount) as total
+      FROM incomes
+      GROUP BY category
+      ORDER BY total DESC
+    ''');
   }
 }

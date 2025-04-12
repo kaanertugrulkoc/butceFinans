@@ -8,6 +8,8 @@ class HomeController extends GetxController {
   final totalExpense = 0.0.obs;
   final isLoading = false.obs;
   final expensesByCategory = <Map<String, dynamic>>[].obs;
+  final incomesByCategory = <Map<String, dynamic>>[].obs;
+  final selectedCategoryTab = 0.obs;
 
   @override
   void onInit() {
@@ -34,6 +36,7 @@ class HomeController extends GetxController {
       totalIncome.value = await databaseService.getTotalIncome();
       totalExpense.value = await databaseService.getTotalExpense();
       expensesByCategory.value = await databaseService.getExpensesByCategory();
+      incomesByCategory.value = await databaseService.getIncomesByCategory();
     } catch (e) {
       Get.snackbar(
         'Hata',
@@ -43,6 +46,10 @@ class HomeController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void changeCategoryTab(int index) {
+    selectedCategoryTab.value = index;
   }
 
   void onIncomeAdded() {

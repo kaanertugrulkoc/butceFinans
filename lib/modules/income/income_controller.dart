@@ -8,11 +8,21 @@ class IncomeController extends GetxController {
   final incomes = <Map<String, dynamic>>[].obs;
   final isLoading = false.obs;
   final totalIncome = 0.0.obs;
+  final amountController = TextEditingController();
+  final descriptionController = TextEditingController();
+  final selectedCategory = 'Maaş'.obs;
 
   @override
   void onInit() {
     super.onInit();
     loadIncomes();
+  }
+
+  @override
+  void onClose() {
+    amountController.dispose();
+    descriptionController.dispose();
+    super.onClose();
   }
 
   Future<void> loadIncomes() async {
@@ -26,6 +36,38 @@ class IncomeController extends GetxController {
     }
   }
 
+  Future<void> addIncome() async {
+    if (amountController.text.isEmpty) {
+      Get.snackbar(
+        'Hata',
+        'Lütfen miktar giriniz',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    try {
+      final income = {
+        'amount': double.parse(amountController.text),
+        'description': descriptionController.text,
+        'category': selectedCategory.value,
+        'date': DateTime.now().toIso8601String(),
+      };
+
+      await databaseService.insertIncome(income);
+      amountController.clear();
+      descriptionController.clear();
+      selectedCategory.value = 'Maaş';
+      loadIncomes();
+    } catch (e) {
+      Get.snackbar(
+        'Hata',
+        'Gelir eklenirken bir hata oluştu',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
   String formatDate(String dateStr) {
     try {
       final date = DateTime.parse(dateStr);
@@ -36,9 +78,6 @@ class IncomeController extends GetxController {
   }
 
   void showAddIncomeDialog(BuildContext context) {
-    final amountController = TextEditingController();
-    final descriptionController = TextEditingController();
-
     Get.dialog(
       AlertDialog(
         title: const Text('Yeni Gelir Ekle'),

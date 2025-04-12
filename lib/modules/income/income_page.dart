@@ -9,58 +9,70 @@ class IncomePage extends GetView<IncomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gelirler'),
+        title: const Text('Gelir Ekle'),
       ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        return ListView.builder(
-          itemCount: controller.incomes.length,
-          itemBuilder: (context, index) {
-            final income = controller.incomes[index];
-
-            // Null kontrolü ve tip dönüşümü
-            final amount = (income['amount'] ?? 0.0) as double;
-            final description = income['description']?.toString() ?? '';
-            final date = income['date']?.toString() ?? '';
-
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: ListTile(
-                leading: const CircleAvatar(
-                  backgroundColor: Colors.green,
-                  child: Icon(
-                    Icons.attach_money,
-                    color: Colors.white,
-                  ),
-                ),
-                title: Text(
-                  '${amount.toStringAsFixed(2)}₺',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (description.isNotEmpty) Text(description),
-                    if (date.isNotEmpty)
-                      Text(
-                        controller.formatDate(date),
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                  ],
-                ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: controller.amountController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Miktar',
+                border: OutlineInputBorder(),
               ),
-            );
-          },
-        );
-      }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => controller.showAddIncomeDialog(context),
-        child: const Icon(Icons.add),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller.descriptionController,
+              decoration: const InputDecoration(
+                labelText: 'Açıklama',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: controller.selectedCategory.value,
+              decoration: const InputDecoration(
+                labelText: 'Kategori',
+                border: OutlineInputBorder(),
+              ),
+              items: [
+                'Maaş',
+                'Yatırım',
+                'Freelance',
+                'Diğer',
+              ].map((String category) {
+                return DropdownMenuItem<String>(
+                  value: category,
+                  child: Text(category),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  controller.selectedCategory.value = newValue;
+                }
+              },
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () {
+                controller.addIncome();
+                Get.back();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: const Text(
+                'Gelir Ekle',
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
