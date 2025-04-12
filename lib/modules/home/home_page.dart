@@ -3,13 +3,11 @@ import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'home_controller.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends GetView<HomeController> {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(HomeController());
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ana Sayfa'),
@@ -20,229 +18,15 @@ class HomePage extends StatelessWidget {
         }
 
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Grafik
-              Card(
-                elevation: 4,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Gelir-Gider Analizi',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Son 30 gün',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        height: 200,
-                        child: BarChart(
-                          BarChartData(
-                            alignment: BarChartAlignment.spaceAround,
-                            maxY: (controller.totalIncome.value >
-                                        controller.totalExpense.value
-                                    ? controller.totalIncome.value
-                                    : controller.totalExpense.value) +
-                                1000,
-                            barTouchData: BarTouchData(
-                              enabled: true,
-                              touchTooltipData: BarTouchTooltipData(
-                                tooltipBgColor: Colors.white,
-                                tooltipPadding: const EdgeInsets.all(8),
-                                tooltipMargin: 8,
-                                getTooltipItem:
-                                    (group, groupIndex, rod, rodIndex) {
-                                  return BarTooltipItem(
-                                    '${rod.toY.toInt()}₺',
-                                    const TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            titlesData: FlTitlesData(
-                              show: true,
-                              bottomTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                  showTitles: true,
-                                  getTitlesWidget: (value, meta) {
-                                    const style = TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                    );
-                                    String text;
-                                    switch (value.toInt()) {
-                                      case 0:
-                                        text = 'Gelir';
-                                        break;
-                                      case 1:
-                                        text = 'Gider';
-                                        break;
-                                      default:
-                                        text = '';
-                                        break;
-                                    }
-                                    return SideTitleWidget(
-                                      axisSide: meta.axisSide,
-                                      child: Text(text, style: style),
-                                    );
-                                  },
-                                ),
-                              ),
-                              leftTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                  showTitles: true,
-                                  reservedSize: 40,
-                                  getTitlesWidget: (value, meta) {
-                                    if (value == 0) {
-                                      return const Text('0');
-                                    }
-                                    return Text(
-                                      '${value.toInt()}₺',
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 12,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              topTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: false),
-                              ),
-                              rightTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: false),
-                              ),
-                            ),
-                            borderData: FlBorderData(
-                              show: true,
-                              border: Border.all(
-                                color: Colors.grey.withOpacity(0.3),
-                                width: 1,
-                              ),
-                            ),
-                            gridData: FlGridData(
-                              show: true,
-                              drawVerticalLine: false,
-                              horizontalInterval: 2000,
-                              getDrawingHorizontalLine: (value) {
-                                return FlLine(
-                                  color: Colors.grey.withOpacity(0.3),
-                                  strokeWidth: 1,
-                                );
-                              },
-                            ),
-                            barGroups: [
-                              BarChartGroupData(
-                                x: 0,
-                                barRods: [
-                                  BarChartRodData(
-                                    toY: controller.totalIncome.value,
-                                    color: Colors.green,
-                                    width: 30,
-                                    borderRadius: BorderRadius.circular(4),
-                                    backDrawRodData: BackgroundBarChartRodData(
-                                      show: true,
-                                      toY: controller.totalIncome.value >
-                                              controller.totalExpense.value
-                                          ? controller.totalIncome.value
-                                          : controller.totalExpense.value,
-                                      color: Colors.grey.withOpacity(0.1),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              BarChartGroupData(
-                                x: 1,
-                                barRods: [
-                                  BarChartRodData(
-                                    toY: controller.totalExpense.value,
-                                    color: Colors.red,
-                                    width: 30,
-                                    borderRadius: BorderRadius.circular(4),
-                                    backDrawRodData: BackgroundBarChartRodData(
-                                      show: true,
-                                      toY: controller.totalIncome.value >
-                                              controller.totalExpense.value
-                                          ? controller.totalIncome.value
-                                          : controller.totalExpense.value,
-                                      color: Colors.grey.withOpacity(0.1),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              // Toplam Gelir ve Gider
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildTotalCard(
-                    'Toplam Gelir',
-                    controller.totalIncome.value,
-                    Colors.green,
-                  ),
-                  _buildTotalCard(
-                    'Toplam Gider',
-                    controller.totalExpense.value,
-                    Colors.red,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              // Menü Kartları
-              GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  _buildMenuCard(
-                    context,
-                    'Gelirler',
-                    Icons.attach_money,
-                    Colors.green,
-                    '/income',
-                  ),
-                  _buildMenuCard(
-                    context,
-                    'Giderler',
-                    Icons.money_off,
-                    Colors.red,
-                    '/expense',
-                  ),
-                  _buildMenuCard(
-                    context,
-                    'İşlem Geçmişi',
-                    Icons.history,
-                    Colors.blue,
-                    '/transactions',
-                  ),
-                ],
-              ),
+              _buildSummaryCard(),
+              const SizedBox(height: 24),
+              _buildPieChart(),
+              const SizedBox(height: 24),
+              _buildCategoryList(),
             ],
           ),
         );
@@ -250,29 +34,35 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTotalCard(String title, double amount, Color color) {
+  Widget _buildSummaryCard() {
     return Card(
-      elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '${amount.toStringAsFixed(2)}₺',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildSummaryItem(
+                  'Toplam Gelir',
+                  controller.totalIncome.value,
+                  Colors.green,
+                ),
+                _buildSummaryItem(
+                  'Toplam Gider',
+                  controller.totalExpense.value,
+                  Colors.red,
+                ),
+                _buildSummaryItem(
+                  'Net Durum',
+                  controller.totalIncome.value - controller.totalExpense.value,
+                  (controller.totalIncome.value -
+                              controller.totalExpense.value) >=
+                          0
+                      ? Colors.green
+                      : Colors.red,
+                ),
+              ],
             ),
           ],
         ),
@@ -280,32 +70,181 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuCard(
-    BuildContext context,
-    String title,
-    IconData icon,
-    Color color,
-    String route,
-  ) {
+  Widget _buildSummaryItem(String title, double value, Color color) {
+    return Column(
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontSize: 14, color: Colors.grey),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '${value.toStringAsFixed(2)}₺',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPieChart() {
+    final total = controller.totalIncome.value + controller.totalExpense.value;
+    if (total == 0) {
+      return const Center(
+        child: Text(
+          'Henüz veri bulunmuyor',
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      );
+    }
+
     return Card(
-      elevation: 4,
-      child: InkWell(
-        onTap: () => Get.toNamed(route),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(
-              icon,
-              size: 48,
-              color: color,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
+            const Text(
+              'Gelir/Gider Dağılımı',
+              style: TextStyle(
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 200,
+              child: PieChart(
+                PieChartData(
+                  sections: [
+                    PieChartSectionData(
+                      value: controller.totalIncome.value,
+                      title:
+                          '${((controller.totalIncome.value / total) * 100).toStringAsFixed(1)}%',
+                      color: Colors.green,
+                      radius: 100,
+                      titleStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    PieChartSectionData(
+                      value: controller.totalExpense.value,
+                      title:
+                          '${((controller.totalExpense.value / total) * 100).toStringAsFixed(1)}%',
+                      color: Colors.red,
+                      radius: 100,
+                      titleStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                  sectionsSpace: 2,
+                  centerSpaceRadius: 40,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildLegendItem('Gelir', Colors.green),
+                const SizedBox(width: 16),
+                _buildLegendItem('Gider', Colors.red),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLegendItem(String text, Color color) {
+    return Row(
+      children: [
+        Container(
+          width: 16,
+          height: 16,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(text),
+      ],
+    );
+  }
+
+  Widget _buildCategoryList() {
+    if (controller.expensesByCategory.isEmpty) {
+      return const Center(
+        child: Text(
+          'Henüz kategori bazlı gider bulunmuyor',
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      );
+    }
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Kategori Bazlı Giderler',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: controller.expensesByCategory.length,
+              itemBuilder: (context, index) {
+                final category = controller.expensesByCategory[index];
+                final total = category['total'] as double;
+                final percentage =
+                    (total / controller.totalExpense.value) * 100;
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            category['category'] as String? ?? 'Kategorisiz',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            '${total.toStringAsFixed(2)}₺ (${percentage.toStringAsFixed(1)}%)',
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      LinearProgressIndicator(
+                        value: percentage / 100,
+                        backgroundColor: Colors.red.withOpacity(0.2),
+                        valueColor:
+                            const AlwaysStoppedAnimation<Color>(Colors.red),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ],
         ),

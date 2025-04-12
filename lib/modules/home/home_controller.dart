@@ -7,7 +7,7 @@ class HomeController extends GetxController {
   final totalIncome = 0.0.obs;
   final totalExpense = 0.0.obs;
   final isLoading = false.obs;
-  final last30DaysData = <Map<String, dynamic>>[].obs;
+  final expensesByCategory = <Map<String, dynamic>>[].obs;
 
   @override
   void onInit() {
@@ -18,10 +18,9 @@ class HomeController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    // Her 5 saniyede bir verileri güncelle
-    Future.delayed(const Duration(seconds: 5), () {
-      loadData();
-    });
+    // Gelir veya gider eklendiğinde verileri güncelle
+    ever(totalIncome, (_) => loadData());
+    ever(totalExpense, (_) => loadData());
   }
 
   @override
@@ -32,10 +31,9 @@ class HomeController extends GetxController {
   Future<void> loadData() async {
     isLoading.value = true;
     try {
-      // Toplam gelir ve gideri güncelle
       totalIncome.value = await databaseService.getTotalIncome();
       totalExpense.value = await databaseService.getTotalExpense();
-      last30DaysData.value = await databaseService.getLast30DaysData();
+      expensesByCategory.value = await databaseService.getExpensesByCategory();
     } catch (e) {
       Get.snackbar(
         'Hata',
@@ -47,12 +45,10 @@ class HomeController extends GetxController {
     }
   }
 
-  // Gelir eklendiğinde çağrılacak
   void onIncomeAdded() {
     loadData();
   }
 
-  // Gider eklendiğinde çağrılacak
   void onExpenseAdded() {
     loadData();
   }
