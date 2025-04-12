@@ -17,11 +17,58 @@ class TransactionsPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('İşlemler'),
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Gelirler'),
-              Tab(text: 'Giderler'),
-            ],
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(100),
+            child: Column(
+              children: [
+                const TabBar(
+                  tabs: [
+                    Tab(text: 'Gelirler'),
+                    Tab(text: 'Giderler'),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Ay seçimi
+                      Obx(() => DropdownButton<int>(
+                            value: controller.selectedMonth.value,
+                            items: List.generate(12, (index) => index + 1)
+                                .map((month) => DropdownMenuItem(
+                                      value: month,
+                                      child: Text('$month. Ay'),
+                                    ))
+                                .toList(),
+                            onChanged: (value) {
+                              if (value != null) {
+                                controller.setSelectedMonth(value);
+                              }
+                            },
+                          )),
+                      const SizedBox(width: 16),
+                      // Yıl seçimi
+                      Obx(() => DropdownButton<int>(
+                            value: controller.selectedYear.value,
+                            items: List.generate(
+                                    5, (index) => DateTime.now().year - index)
+                                .map((year) => DropdownMenuItem(
+                                      value: year,
+                                      child: Text('$year'),
+                                    ))
+                                .toList(),
+                            onChanged: (value) {
+                              if (value != null) {
+                                controller.setSelectedYear(value);
+                              }
+                            },
+                          )),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         body: TabBarView(

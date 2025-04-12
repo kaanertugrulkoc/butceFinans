@@ -33,7 +33,9 @@ class DatabaseService {
         amount REAL NOT NULL,
         description TEXT,
         category TEXT,
-        date TEXT NOT NULL
+        date TEXT NOT NULL,
+        month INTEGER NOT NULL,
+        year INTEGER NOT NULL
       )
     ''');
 
@@ -44,13 +46,21 @@ class DatabaseService {
         amount REAL NOT NULL,
         description TEXT,
         category TEXT,
-        date TEXT NOT NULL
+        date TEXT NOT NULL,
+        month INTEGER NOT NULL,
+        year INTEGER NOT NULL
       )
     ''');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Veritabanı yapısında değişiklik yapılırsa burada güncelleme işlemleri yapılacak
+    if (oldVersion < 1) {
+      // Eski tabloları sil
+      await db.execute('DROP TABLE IF EXISTS incomes');
+      await db.execute('DROP TABLE IF EXISTS expenses');
+      // Yeni tabloları oluştur
+      await _onCreate(db, newVersion);
+    }
   }
 
   // Gelir işlemleri
@@ -63,12 +73,16 @@ class DatabaseService {
         throw Exception('Miktar alanı boş olamaz');
       }
 
+      final now = DateTime.now();
+
       // Veriyi hazırla
       final incomeData = {
         'amount': double.parse(income['amount'].toString()),
         'description': income['description']?.toString() ?? '',
         'category': income['category']?.toString() ?? 'Diğer',
-        'date': income['date']?.toString() ?? DateTime.now().toIso8601String(),
+        'date': income['date']?.toString() ?? now.toIso8601String(),
+        'month': now.month,
+        'year': now.year,
       };
 
       print('Eklenecek gelir verisi: $incomeData');
@@ -83,21 +97,44 @@ class DatabaseService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getIncomes() async {
+  Future<List<Map<String, dynamic>>> getIncomes({int? month, int? year}) async {
     try {
       final db = await database;
-      return await db.query('incomes', orderBy: 'date DESC');
+      String whereClause = '';
+      List<dynamic> whereArgs = [];
+
+      if (month != null && year != null) {
+        whereClause = 'month = ? AND year = ?';
+        whereArgs = [month, year];
+      }
+
+      return await db.query(
+        'incomes',
+        where: whereClause,
+        whereArgs: whereArgs,
+        orderBy: 'date DESC',
+      );
     } catch (e) {
       print('Gelirleri getirme hatası: $e');
       return [];
     }
   }
 
-  Future<double> getTotalIncome() async {
+  Future<double> getTotalIncome({int? month, int? year}) async {
     try {
       final db = await database;
-      final result =
-          await db.rawQuery('SELECT SUM(amount) as total FROM incomes');
+      String whereClause = '';
+      List<dynamic> whereArgs = [];
+
+      if (month != null && year != null) {
+        whereClause = 'month = ? AND year = ?';
+        whereArgs = [month, year];
+      }
+
+      final result = await db.rawQuery(
+        'SELECT SUM(amount) as total FROM incomes${whereClause.isNotEmpty ? ' WHERE $whereClause' : ''}',
+        whereArgs,
+      );
       return result.first['total'] as double? ?? 0.0;
     } catch (e) {
       print('Toplam gelir hesaplama hatası: $e');
@@ -126,12 +163,16 @@ class DatabaseService {
         throw Exception('Miktar alanı boş olamaz');
       }
 
+      final now = DateTime.now();
+
       // Veriyi hazırla
       final expenseData = {
         'amount': double.parse(expense['amount'].toString()),
         'description': expense['description']?.toString() ?? '',
         'category': expense['category']?.toString() ?? 'Diğer',
-        'date': expense['date']?.toString() ?? DateTime.now().toIso8601String(),
+        'date': expense['date']?.toString() ?? now.toIso8601String(),
+        'month': now.month,
+        'year': now.year,
       };
 
       print('Eklenecek gider verisi: $expenseData');
@@ -146,21 +187,45 @@ class DatabaseService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getExpenses() async {
+  Future<List<Map<String, dynamic>>> getExpenses(
+      {int? month, int? year}) async {
     try {
       final db = await database;
-      return await db.query('expenses', orderBy: 'date DESC');
+      String whereClause = '';
+      List<dynamic> whereArgs = [];
+
+      if (month != null && year != null) {
+        whereClause = 'month = ? AND year = ?';
+        whereArgs = [month, year];
+      }
+
+      return await db.query(
+        'expenses',
+        where: whereClause,
+        whereArgs: whereArgs,
+        orderBy: 'date DESC',
+      );
     } catch (e) {
       print('Giderleri getirme hatası: $e');
       return [];
     }
   }
 
-  Future<double> getTotalExpense() async {
+  Future<double> getTotalExpense({int? month, int? year}) async {
     try {
       final db = await database;
-      final result =
-          await db.rawQuery('SELECT SUM(amount) as total FROM expenses');
+      String whereClause = '';
+      List<dynamic> whereArgs = [];
+
+      if (month != null && year != null) {
+        whereClause = 'month = ? AND year = ?';
+        whereArgs = [month, year];
+      }
+
+      final result = await db.rawQuery(
+        'SELECT SUM(amount) as total FROM expenses${whereClause.isNotEmpty ? ' WHERE $whereClause' : ''}',
+        whereArgs,
+      );
       return result.first['total'] as double? ?? 0.0;
     } catch (e) {
       print('Toplam gider hesaplama hatası: $e');
@@ -180,17 +245,28 @@ class DatabaseService {
   }
 
   // Kategori bazlı analizler
-  Future<List<Map<String, dynamic>>> getIncomesByCategory() async {
+  Future<List<Map<String, dynamic>>> getIncomesByCategory(
+      {int? month, int? year}) async {
     try {
       final db = await database;
+      String whereClause = '';
+      List<dynamic> whereArgs = [];
+
+      if (month != null && year != null) {
+        whereClause = 'WHERE month = ? AND year = ?';
+        whereArgs = [month, year];
+      }
+
       final List<Map<String, dynamic>> maps = await db.rawQuery('''
         SELECT 
           COALESCE(category, 'Kategorisiz') as category,
           COALESCE(SUM(amount), 0) as total
         FROM incomes
+        $whereClause
         GROUP BY category
         ORDER BY total DESC
-      ''');
+      ''', whereArgs);
+
       print('Gelir kategorileri sorgu sonucu: $maps');
       return maps;
     } catch (e, stackTrace) {
@@ -200,17 +276,28 @@ class DatabaseService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getExpensesByCategory() async {
+  Future<List<Map<String, dynamic>>> getExpensesByCategory(
+      {int? month, int? year}) async {
     try {
       final db = await database;
+      String whereClause = '';
+      List<dynamic> whereArgs = [];
+
+      if (month != null && year != null) {
+        whereClause = 'WHERE month = ? AND year = ?';
+        whereArgs = [month, year];
+      }
+
       final List<Map<String, dynamic>> maps = await db.rawQuery('''
         SELECT 
           COALESCE(category, 'Kategorisiz') as category,
           COALESCE(SUM(amount), 0) as total
         FROM expenses
+        $whereClause
         GROUP BY category
         ORDER BY total DESC
-      ''');
+      ''', whereArgs);
+
       print('Gider kategorileri sorgu sonucu: $maps');
       return maps;
     } catch (e, stackTrace) {

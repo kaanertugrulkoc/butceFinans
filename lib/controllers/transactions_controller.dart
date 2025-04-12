@@ -18,6 +18,10 @@ class TransactionsController extends GetxController {
   final RxDouble totalIncome = 0.0.obs;
   final RxDouble totalExpense = 0.0.obs;
 
+  // Seçili ay ve yıl
+  final RxInt selectedMonth = DateTime.now().month.obs;
+  final RxInt selectedYear = DateTime.now().year.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -27,14 +31,26 @@ class TransactionsController extends GetxController {
 
   Future<void> loadTransactions() async {
     try {
-      final loadedIncomes = await _databaseService.getIncomes();
-      final loadedExpenses = await _databaseService.getExpenses();
+      final loadedIncomes = await _databaseService.getIncomes(
+        month: selectedMonth.value,
+        year: selectedYear.value,
+      );
+      final loadedExpenses = await _databaseService.getExpenses(
+        month: selectedMonth.value,
+        year: selectedYear.value,
+      );
 
       incomes.value = loadedIncomes;
       expenses.value = loadedExpenses;
 
-      totalIncome.value = await _databaseService.getTotalIncome();
-      totalExpense.value = await _databaseService.getTotalExpense();
+      totalIncome.value = await _databaseService.getTotalIncome(
+        month: selectedMonth.value,
+        year: selectedYear.value,
+      );
+      totalExpense.value = await _databaseService.getTotalExpense(
+        month: selectedMonth.value,
+        year: selectedYear.value,
+      );
     } catch (e) {
       print('İşlemleri yükleme hatası: $e');
     }
@@ -43,15 +59,33 @@ class TransactionsController extends GetxController {
   Future<void> loadCategoryAnalyses() async {
     try {
       final loadedIncomeCategories =
-          await _databaseService.getIncomesByCategory();
+          await _databaseService.getIncomesByCategory(
+        month: selectedMonth.value,
+        year: selectedYear.value,
+      );
       final loadedExpenseCategories =
-          await _databaseService.getExpensesByCategory();
+          await _databaseService.getExpensesByCategory(
+        month: selectedMonth.value,
+        year: selectedYear.value,
+      );
 
       incomeCategories.value = loadedIncomeCategories;
       expenseCategories.value = loadedExpenseCategories;
     } catch (e) {
       print('Kategori analizlerini yükleme hatası: $e');
     }
+  }
+
+  void setSelectedMonth(int month) {
+    selectedMonth.value = month;
+    loadTransactions();
+    loadCategoryAnalyses();
+  }
+
+  void setSelectedYear(int year) {
+    selectedYear.value = year;
+    loadTransactions();
+    loadCategoryAnalyses();
   }
 
   Future<void> addIncome(Map<String, dynamic> income) async {
