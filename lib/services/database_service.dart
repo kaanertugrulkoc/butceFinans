@@ -96,14 +96,14 @@ class DatabaseService {
     List<dynamic> whereArgs = [];
 
     if (month != null && year != null) {
-      whereClause = 'WHERE month = ? AND year = ?';
+      whereClause = 'month = ? AND year = ?';
       whereArgs = [month, year];
     }
 
     return await db.query(
       'incomes',
-      where: whereClause,
-      whereArgs: whereArgs,
+      where: whereClause.isEmpty ? null : whereClause,
+      whereArgs: whereArgs.isEmpty ? null : whereArgs,
       orderBy: 'date DESC',
     );
   }
@@ -188,14 +188,14 @@ class DatabaseService {
     List<dynamic> whereArgs = [];
 
     if (month != null && year != null) {
-      whereClause = 'WHERE month = ? AND year = ?';
+      whereClause = 'month = ? AND year = ?';
       whereArgs = [month, year];
     }
 
     return await db.query(
       'expenses',
-      where: whereClause,
-      whereArgs: whereArgs,
+      where: whereClause.isEmpty ? null : whereClause,
+      whereArgs: whereArgs.isEmpty ? null : whereArgs,
       orderBy: 'date DESC',
     );
   }

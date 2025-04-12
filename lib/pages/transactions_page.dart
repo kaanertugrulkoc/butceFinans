@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/transactions_controller.dart';
-import '../widgets/transaction_form.dart';
-import '../widgets/transaction_list.dart';
 import '../widgets/category_analysis.dart';
+import '../widgets/transaction_list.dart';
+import '../widgets/transaction_form.dart';
 
 class TransactionsPage extends StatelessWidget {
   const TransactionsPage({super.key});
@@ -17,197 +17,67 @@ class TransactionsPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('İşlemler'),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(100),
-            child: Column(
-              children: [
-                const TabBar(
-                  tabs: [
-                    Tab(text: 'Gelirler'),
-                    Tab(text: 'Giderler'),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Ay seçimi
-                      Obx(() => DropdownButton<int>(
-                            value: controller.selectedMonth.value,
-                            items: List.generate(12, (index) => index + 1)
-                                .map((month) => DropdownMenuItem(
-                                      value: month,
-                                      child: Text('$month. Ay'),
-                                    ))
-                                .toList(),
-                            onChanged: (value) {
-                              if (value != null) {
-                                controller.setSelectedMonth(value);
-                              }
-                            },
-                          )),
-                      const SizedBox(width: 16),
-                      // Yıl seçimi
-                      Obx(() => DropdownButton<int>(
-                            value: controller.selectedYear.value,
-                            items: List.generate(
-                                    5, (index) => DateTime.now().year - index)
-                                .map((year) => DropdownMenuItem(
-                                      value: year,
-                                      child: Text('$year'),
-                                    ))
-                                .toList(),
-                            onChanged: (value) {
-                              if (value != null) {
-                                controller.setSelectedYear(value);
-                              }
-                            },
-                          )),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+          bottom: TabBar(
+            tabs: const [
+              Tab(text: 'Gelirler'),
+              Tab(text: 'Giderler'),
+            ],
+            onTap: (index) {
+              controller.loadTransactions();
+              controller.loadCategoryAnalyses();
+            },
           ),
         ),
         body: TabBarView(
           children: [
             // Gelirler Tab
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  // Toplam Gelir Kartı
-                  Card(
-                    margin: const EdgeInsets.all(16),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Toplam Gelir',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Obx(() => Text(
-                                '₺${controller.totalIncome.value.toStringAsFixed(2)}',
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Kategori Analizi
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      'Kategori Analizi',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Obx(() => CategoryAnalysis(
-                        categories: controller.incomeCategories,
-                        color: Colors.green,
-                      )),
-
-                  // Gelir Listesi
-                  const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text(
-                      'Son İşlemler',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Obx(() => TransactionList(
-                        transactions: controller.incomes,
-                        onDelete: controller.deleteIncome,
-                        isIncome: true,
-                      )),
-                ],
+            RefreshIndicator(
+              onRefresh: () async {
+                await controller.loadTransactions();
+                await controller.loadCategoryAnalyses();
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    Obx(() => CategoryAnalysis(
+                          title: 'Gelir Kategorileri',
+                          categories: controller.incomeCategories,
+                          total: controller.totalIncome.value,
+                        )),
+                    const SizedBox(height: 16),
+                    Obx(() => TransactionList(
+                          transactions: controller.incomes,
+                          isIncome: true,
+                          onDelete: controller.deleteIncome,
+                        )),
+                  ],
+                ),
               ),
             ),
-
             // Giderler Tab
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  // Toplam Gider Kartı
-                  Card(
-                    margin: const EdgeInsets.all(16),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Toplam Gider',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Obx(() => Text(
-                                '₺${controller.totalExpense.value.toStringAsFixed(2)}',
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Kategori Analizi
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      'Kategori Analizi',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Obx(() => CategoryAnalysis(
-                        categories: controller.expenseCategories,
-                        color: Colors.red,
-                      )),
-
-                  // Gider Listesi
-                  const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text(
-                      'Son İşlemler',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Obx(() => TransactionList(
-                        transactions: controller.expenses,
-                        onDelete: controller.deleteExpense,
-                        isIncome: false,
-                      )),
-                ],
+            RefreshIndicator(
+              onRefresh: () async {
+                await controller.loadTransactions();
+                await controller.loadCategoryAnalyses();
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    Obx(() => CategoryAnalysis(
+                          title: 'Gider Kategorileri',
+                          categories: controller.expenseCategories,
+                          total: controller.totalExpense.value,
+                        )),
+                    const SizedBox(height: 16),
+                    Obx(() => TransactionList(
+                          transactions: controller.expenses,
+                          isIncome: false,
+                          onDelete: controller.deleteExpense,
+                        )),
+                  ],
+                ),
               ),
             ),
           ],
