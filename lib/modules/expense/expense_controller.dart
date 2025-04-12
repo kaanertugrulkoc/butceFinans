@@ -11,12 +11,28 @@ class ExpenseController extends GetxController {
   final expenses = <Map<String, dynamic>>[].obs;
   final isLoading = false.obs;
   final totalExpense = 0.0.obs;
-  final categories = ['Yemek', 'Ulaşım', 'Faturalar', 'Alışveriş', 'Diğer'].obs;
+  final categories = [
+    'Kira',
+    'Faturalar',
+    'Market',
+    'Ulaşım',
+    'Sağlık',
+    'Eğlence',
+    'Diğer',
+  ].obs;
 
   @override
   void onInit() {
     super.onInit();
     loadExpenses();
+  }
+
+  @override
+  void onClose() {
+    amountController.dispose();
+    descriptionController.dispose();
+    categoryController.dispose();
+    super.onClose();
   }
 
   Future<void> loadExpenses() async {
@@ -52,17 +68,31 @@ class ExpenseController extends GetxController {
     }
   }
 
-  @override
-  void onClose() {
-    amountController.dispose();
-    descriptionController.dispose();
-    categoryController.dispose();
-    super.onClose();
-  }
-
   String formatDate(String dateStr) {
     final date = DateTime.parse(dateStr);
     return '${date.day}/${date.month}/${date.year}';
+  }
+
+  Future<void> deleteExpense(int id) async {
+    try {
+      await databaseService.deleteExpense(id);
+      await loadExpenses();
+      Get.snackbar(
+        'Başarılı',
+        'Gider başarıyla silindi',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Hata',
+        'Gider silinirken bir hata oluştu',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
   }
 
   void showAddExpenseDialog(BuildContext context) {
@@ -70,12 +100,13 @@ class ExpenseController extends GetxController {
     final descriptionController = TextEditingController();
     final categoryController = TextEditingController();
     final categories = [
-      'Yemek',
-      'Ulaşım',
-      'Alışveriş',
+      'Kira',
       'Faturalar',
+      'Market',
+      'Ulaşım',
+      'Sağlık',
       'Eğlence',
-      'Diğer'
+      'Diğer',
     ];
 
     Get.dialog(

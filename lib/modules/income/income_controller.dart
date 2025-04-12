@@ -73,6 +73,28 @@ class IncomeController extends GetxController {
     return '${date.day}/${date.month}/${date.year}';
   }
 
+  Future<void> deleteIncome(int id) async {
+    try {
+      await databaseService.deleteIncome(id);
+      await loadIncomes();
+      Get.snackbar(
+        'Başarılı',
+        'Gelir başarıyla silindi',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Hata',
+        'Gelir silinirken bir hata oluştu',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
   void showAddIncomeDialog(BuildContext context) {
     final amountController = TextEditingController();
     final descriptionController = TextEditingController();
@@ -84,7 +106,7 @@ class IncomeController extends GetxController {
       'Kira',
       'İkramiye',
       'Ek Gelir',
-      'Diğer'
+      'Diğer',
     ];
 
     Get.dialog(

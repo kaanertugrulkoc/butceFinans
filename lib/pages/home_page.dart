@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import '../controllers/transactions_controller.dart';
 import '../widgets/balance_card.dart';
 import '../widgets/transaction_summary.dart';
-import '../widgets/recent_transactions.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -46,7 +45,6 @@ class _HomePageState extends State<HomePage> {
             children: [
               const BalanceCard(),
               const TransactionSummary(),
-              const RecentTransactions(),
             ],
           ),
         ),

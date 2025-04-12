@@ -407,12 +407,6 @@ class _HomePageState extends State<HomePage> {
               Colors.red,
               '/expense',
             ),
-            _buildMenuButton(
-              'İşlem Geçmişi',
-              Icons.history,
-              Colors.blue,
-              '/transactions',
-            ),
           ],
         ),
       ),

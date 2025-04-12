@@ -48,18 +48,10 @@ class HomeController extends GetxController {
       totalExpense.value = totalExpenseResult;
       incomesByCategory.value = incomeCategories;
       expensesByCategory.value = expenseCategories;
-
-      // Debug için verileri yazdır
-      print('Toplam Gelir: ${totalIncome.value}');
-      print('Toplam Gider: ${totalExpense.value}');
-      print('Gelir Kategorileri: $incomeCategories');
-      print('Gider Kategorileri: $expenseCategories');
-    } catch (e, stackTrace) {
-      print('Hata: $e');
-      print('Stack Trace: $stackTrace');
+    } catch (e) {
       Get.snackbar(
         'Hata',
-        'Veriler yüklenirken bir hata oluştu: $e',
+        'Veriler yüklenirken bir hata oluştu',
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
