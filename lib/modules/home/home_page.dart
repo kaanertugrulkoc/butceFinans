@@ -3,11 +3,13 @@ import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'home_controller.dart';
 
-class HomePage extends GetView<HomeController> {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(HomeController());
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ana Sayfa'),
