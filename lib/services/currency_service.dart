@@ -4,6 +4,7 @@ import 'package:xml/xml.dart';
 
 class CurrencyService {
   static const String _tcmbUrl = 'https://www.tcmb.gov.tr/kurlar/today.xml';
+  static const String _tcmbGoldUrl = 'https://www.tcmb.gov.tr/kurlar/today.xml';
 
   Future<Map<String, dynamic>> getCurrencyRates() async {
     try {
@@ -48,17 +49,26 @@ class CurrencyService {
       if (response.statusCode == 200) {
         final document = XmlDocument.parse(response.body);
 
-        // Gram altın fiyatı
+        // Gram altın fiyatı (GA)
         final goldElement = document
             .findAllElements('Currency')
-            .firstWhere((element) => element.getAttribute('Kod') == 'XAU');
-        final goldRate = double.parse(goldElement
-            .findElements('ForexSelling')
+            .firstWhere((element) => element.getAttribute('Kod') == 'GA');
+
+        // Alış ve satış fiyatlarını al
+        final buyingPrice = double.parse(goldElement
+            .findElements('BanknoteBuying')
             .first
             .text
             .replaceAll(',', '.'));
 
-        return goldRate;
+        final sellingPrice = double.parse(goldElement
+            .findElements('BanknoteSelling')
+            .first
+            .text
+            .replaceAll(',', '.'));
+
+        // Ortalama fiyatı döndür
+        return (buyingPrice + sellingPrice) / 2;
       }
       throw Exception('Altın fiyatı alınamadı');
     } catch (e) {
