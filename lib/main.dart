@@ -5,6 +5,8 @@ import 'services/storage_service.dart';
 import 'services/api_service.dart';
 import 'services/database_service.dart';
 
+import 'services/currency_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -14,6 +16,9 @@ void main() async {
   // Diğer servisleri başlat
   await Get.putAsync<StorageService>(() async => StorageService().init());
   await Get.putAsync<ApiService>(() async => ApiService().init());
+
+  // CurrencyService'i ekle
+  Get.lazyPut(() => CurrencyService());
 
   runApp(const MyApp());
 }
