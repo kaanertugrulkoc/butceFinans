@@ -8,7 +8,10 @@ class CategoryAnalysisPage extends StatelessWidget {
       Get.put(CategoryAnalysisController());
   final CurrencyService currencyService = CurrencyService();
 
-  CategoryAnalysisPage({super.key});
+  CategoryAnalysisPage({super.key}) {
+    // Sayfa açıldığında verileri yenile
+    controller.refreshData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +30,14 @@ class CategoryAnalysisPage extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            _buildIncomeAnalysis(),
-            _buildExpenseAnalysis(),
+            SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: _buildIncomeAnalysis(),
+            ),
+            SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: _buildExpenseAnalysis(),
+            ),
             _buildCurrencyAndGold(),
           ],
         ),
@@ -56,12 +65,10 @@ class CategoryAnalysisPage extends StatelessWidget {
         (sum, category) => sum + category.amount,
       );
 
-      return RefreshIndicator(
-        onRefresh: () async {
-          controller.loadData();
-        },
-        child: ListView(
-          padding: const EdgeInsets.all(16.0),
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
           children: [
             _buildTotalCard(
               'Toplam Gelir',
@@ -106,12 +113,10 @@ class CategoryAnalysisPage extends StatelessWidget {
         (sum, category) => sum + category.amount,
       );
 
-      return RefreshIndicator(
-        onRefresh: () async {
-          controller.loadData();
-        },
-        child: ListView(
-          padding: const EdgeInsets.all(16.0),
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
           children: [
             _buildTotalCard(
               'Toplam Gider',

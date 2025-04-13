@@ -6,46 +6,40 @@ import 'package:bitirme_projesi_app/modules/expense/expense_page.dart';
 import 'package:bitirme_projesi_app/modules/category_analysis/category_analysis_page.dart';
 import 'home_controller.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends GetView<HomeController> {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
   Widget build(BuildContext context) {
-    return GetBuilder<HomeController>(
-      init: HomeController(),
-      builder: (controller) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Ana Sayfa'),
-          ),
-          body: Obx(() {
-            if (controller.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
-            }
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSummaryCard(controller),
-                  const SizedBox(height: 5),
-                  _buildPieChart(controller),
-                  const SizedBox(height: 5),
-                  _buildCategoryTabs(controller),
-                  const SizedBox(height: 5),
-                  _buildMenuGrid(),
-                ],
-              ),
-            );
-          }),
+        return RefreshIndicator(
+          onRefresh: () => controller.loadData(),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildMenuGrid(),
+                const SizedBox(height: 10),
+                _buildSummaryCard(controller),
+                const SizedBox(height: 5),
+                _buildPieChart(controller),
+                const SizedBox(height: 5),
+                _buildCategoryTabs(controller),
+              ],
+            ),
+          ),
         );
-      },
+      }),
     );
   }
 
@@ -394,27 +388,45 @@ class _HomePageState extends State<HomePage> {
   Widget _buildMenuGrid() {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildMenuButton(
-              'Gelir Ekle',
-              Icons.attach_money,
-              Colors.green,
-              () => Get.to(() => IncomePage()),
+            const Text(
+              'Hızlı İşlemler',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            _buildMenuButton(
-              'Gider Ekle',
-              Icons.money_off,
-              Colors.red,
-              () => Get.to(() => ExpensePage()),
-            ),
-            _buildMenuButton(
-              'Varlıklarım',
-              Icons.analytics_outlined,
-              Colors.blue,
-              () => Get.to(() => CategoryAnalysisPage()),
+            const SizedBox(height: 12),
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 3,
+              mainAxisSpacing: 6,
+              crossAxisSpacing: 6,
+              childAspectRatio: 1.5,
+              children: [
+                _buildMenuButton(
+                  'Gelir Ekle',
+                  Icons.add_circle_outline,
+                  Colors.green,
+                  () => Get.to(() => const IncomePage()),
+                ),
+                _buildMenuButton(
+                  'Gider Ekle',
+                  Icons.remove_circle_outline,
+                  Colors.red,
+                  () => Get.to(() => const ExpensePage()),
+                ),
+                _buildMenuButton(
+                  'Varlıklarım',
+                  Icons.analytics_outlined,
+                  Colors.blue,
+                  () => Get.to(() => CategoryAnalysisPage()),
+                ),
+              ],
             ),
           ],
         ),
@@ -430,30 +442,28 @@ class _HomePageState extends State<HomePage> {
   ) {
     return InkWell(
       onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: 20),
+            const SizedBox(height: 2),
+            Text(
+              title,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.bold,
+                fontSize: 10,
+              ),
+              textAlign: TextAlign.center,
             ),
-            child: Icon(
-              icon,
-              size: 24,
-              color: color,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
