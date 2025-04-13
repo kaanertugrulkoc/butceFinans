@@ -2,140 +2,82 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'transactions_controller.dart';
 
-class TransactionsPage extends GetView<TransactionsController> {
-  const TransactionsPage({super.key});
+class TransactionsPage extends StatelessWidget {
+  const TransactionsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('İşlem Geçmişi'),
-          bottom: TabBar(
-            onTap: controller.changeTab,
-            tabs: const [
-              Tab(text: 'Gelirler'),
-              Tab(text: 'Giderler'),
-            ],
-          ),
-        ),
-        body: Obx(() {
-          if (controller.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          return TabBarView(
-            children: [
-              _buildTransactionList(controller.incomes, true),
-              _buildTransactionList(controller.expenses, false),
-            ],
-          );
-        }),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('İşlemlerim'),
       ),
-    );
-  }
-
-  Widget _buildTransactionList(
-      List<Map<String, dynamic>> transactions, bool isIncome) {
-    if (transactions.isEmpty) {
-      return Center(
-        child: Text(
-          isIncome ? 'Henüz gelir eklenmemiş' : 'Henüz gider eklenmemiş',
-          style: const TextStyle(fontSize: 16, color: Colors.grey),
-        ),
-      );
-    }
-
-    return ListView.builder(
-      itemCount: transactions.length,
-      itemBuilder: (context, index) {
-        final transaction = transactions[index];
-        final amount = transaction['amount'] as num;
-        final description = transaction['description'] as String?;
-        final date = transaction['date'] as String;
-        final category = transaction['category'] as String?;
-        final id = transaction['id'] as int;
-
-        return Dismissible(
-          key: Key('$id-${isIncome ? 'income' : 'expense'}'),
-          direction: DismissDirection.endToStart,
-          background: Container(
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.only(right: 20),
-            color: Colors.red,
-            child: const Icon(
-              Icons.delete,
-              color: Colors.white,
-            ),
-          ),
-          confirmDismiss: (direction) async {
-            return await Get.dialog(
-              AlertDialog(
-                title: const Text('Silme Onayı'),
-                content: Text(
-                    'Bu ${isIncome ? 'gelir' : 'gider'} kaydını silmek istediğinizden emin misiniz?'),
-                actions: [
-                  TextButton(
-                    onPressed: () => Get.back(result: false),
-                    child: const Text('İptal'),
-                  ),
-                  TextButton(
-                    onPressed: () => Get.back(result: true),
-                    child: const Text('Sil'),
-                  ),
-                ],
-              ),
-            );
-          },
-          onDismissed: (direction) {
-            if (isIncome) {
-              controller.deleteIncome(id);
-            } else {
-              controller.deleteExpense(id);
+      body: GetBuilder<TransactionsController>(
+        init: TransactionsController(),
+        builder: (controller) {
+          return Obx(() {
+            if (controller.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
             }
-            Get.snackbar(
-              'Başarılı',
-              '${isIncome ? 'Gelir' : 'Gider'} kaydı silindi',
-              snackPosition: SnackPosition.BOTTOM,
-            );
-          },
-          child: Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: isIncome ? Colors.green : Colors.red,
-                child: Icon(
-                  isIncome ? Icons.attach_money : Icons.money_off,
-                  color: Colors.white,
-                ),
-              ),
-              title: Text(
-                '${amount.toStringAsFixed(2)}₺',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: isIncome ? Colors.green : Colors.red,
-                ),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (description != null && description.isNotEmpty)
-                    Text(description),
-                  if (!isIncome && category != null)
-                    Text(
-                      'Kategori: $category',
-                      style: const TextStyle(fontSize: 12),
+
+            if (controller.transactions.isEmpty) {
+              return const Center(
+                child: Text('Henüz işlem bulunmuyor'),
+              );
+            }
+
+            return ListView.builder(
+              itemCount: controller.transactions.length,
+              itemBuilder: (context, index) {
+                final transaction = controller.transactions[index];
+                final date = DateTime.parse(transaction['date'] as String);
+                final formattedDate = '${date.day}/${date.month}/${date.year}';
+
+                return Dismissible(
+                  key: Key(transaction['id'].toString()),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 16),
+                    child: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
                     ),
-                  Text(
-                    controller.formatDate(date),
-                    style: const TextStyle(fontSize: 12),
                   ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
+                  onDismissed: (direction) {
+                    controller.deleteTransaction(
+                      transaction['id'] as int,
+                      transaction['type'] as String,
+                    );
+                  },
+                  child: Card(
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: transaction['color'] as Color,
+                        child: Icon(
+                          transaction['type'] == 'income'
+                              ? Icons.arrow_upward
+                              : Icons.arrow_downward,
+                          color: Colors.white,
+                        ),
+                      ),
+                      title: Text(transaction['category'] as String),
+                      subtitle: Text(formattedDate),
+                      trailing: Text(
+                        '₺${(transaction['amount'] as num).toStringAsFixed(2)}',
+                        style: TextStyle(
+                          color: transaction['color'] as Color,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          });
+        },
+      ),
     );
   }
 }

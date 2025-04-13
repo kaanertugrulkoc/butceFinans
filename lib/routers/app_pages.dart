@@ -12,9 +12,17 @@ import '../modules/expense/expense_binding.dart';
 import '../modules/expense/expense_page.dart';
 import '../modules/transactions/transactions_binding.dart';
 import '../modules/transactions/transactions_page.dart';
+import '../modules/about/about_page.dart';
+import '../modules/about/about_binding.dart';
+import '../modules/category_analysis/category_analysis_page.dart';
+import '../modules/category_analysis/category_analysis_binding.dart';
+import '../modules/profile/profile_page.dart';
+import '../modules/profile/profile_binding.dart';
+
+part 'app_routes.dart';
 
 abstract class AppRouters {
-  static const INITIAL = SPLASH;
+  static const INITIAL = Routes.HOME;
   static const SPLASH = '/splash';
   static const LOGIN = '/login';
   static const HOME = '/home';
@@ -22,39 +30,48 @@ abstract class AppRouters {
   static const INCOME = '/income';
   static const EXPENSE = '/expense';
   static const TRANSACTIONS = '/transactions';
+  static const ABOUT = '/about';
+  static const CATEGORY_ANALYSIS = '/category_analysis';
 }
 
 class AppPages {
-  static final pages = <GetPage>[
+  static const INITIAL = Routes.HOME;
+
+  static final List<GetPage> pages = [
     GetPage(
-      name: AppRouters.SPLASH,
-      page: () => SplashPage(),
-      binding: SplashBindings(),
+      name: Routes.HOME,
+      page: () => const HomePage(),
+      binding: HomeBinding(),
     ),
     GetPage(
-      name: AppRouters.LOGIN,
-      page: () => LoginPage(),
-      binding: LoginBindings(),
-    ),
-    GetPage(
-      name: AppRouters.HOME,
-      page: () => HomePage(),
-      binding: HomeBindings(),
-    ),
-    GetPage(
-      name: AppRouters.INCOME,
+      name: Routes.INCOME,
       page: () => const IncomePage(),
       binding: IncomeBinding(),
     ),
     GetPage(
-      name: AppRouters.EXPENSE,
+      name: Routes.EXPENSE,
       page: () => const ExpensePage(),
       binding: ExpenseBinding(),
     ),
     GetPage(
-      name: AppRouters.TRANSACTIONS,
+      name: Routes.TRANSACTIONS,
       page: () => const TransactionsPage(),
       binding: TransactionsBinding(),
+    ),
+    GetPage(
+      name: Routes.CATEGORY_ANALYSIS,
+      page: () => const CategoryAnalysisPage(),
+      binding: CategoryAnalysisBinding(),
+    ),
+    GetPage(
+      name: Routes.PROFILE,
+      page: () => const ProfilePage(),
+      binding: ProfileBinding(),
+    ),
+    GetPage(
+      name: Routes.ABOUT,
+      page: () => const AboutPage(),
+      binding: AboutBinding(),
     ),
   ];
 }

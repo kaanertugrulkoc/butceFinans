@@ -1,28 +1,25 @@
-import 'package:bitirme_projesi_app/core/app_bindings.dart';
-import 'package:bitirme_projesi_app/routers/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'routers/app_pages.dart';
+import 'modules/splash/splash_page.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'B Ü T Ç E',
+      title: 'FinansApp',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      initialRoute: AppPages.INITIAL,
       getPages: AppPages.pages,
-      initialRoute: AppRouters.HOME,
-      initialBinding: AppBindings(),
     );
   }
 }

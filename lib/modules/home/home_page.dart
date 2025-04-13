@@ -5,6 +5,8 @@ import 'package:bitirme_projesi_app/modules/income/income_page.dart';
 import 'package:bitirme_projesi_app/modules/expense/expense_page.dart';
 import 'package:bitirme_projesi_app/modules/category_analysis/category_analysis_page.dart';
 import 'home_controller.dart';
+import '../profile/profile_page.dart';
+import '../about/about_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -32,8 +34,17 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
+        title: const Text('Ana Sayfa'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () => Get.to(() => const ProfilePage()),
+          ),
+          IconButton(
+            icon: const Icon(Icons.info),
+            onPressed: () => Get.to(() => const AboutPage()),
+          ),
+        ],
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -443,7 +454,7 @@ class _HomePageState extends State<HomePage> {
                   'Varlıklarım',
                   Icons.analytics_outlined,
                   Colors.blue,
-                  () => Get.to(() => CategoryAnalysisPage()),
+                  () => Get.to(() => const CategoryAnalysisPage()),
                 ),
               ],
             ),

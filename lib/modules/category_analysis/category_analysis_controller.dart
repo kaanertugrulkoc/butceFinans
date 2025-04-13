@@ -1,64 +1,75 @@
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import '../../services/database_service.dart';
-import '../../models/category.dart';
+import '../../services/currency_service.dart';
 
-class CategoryAnalysisController extends GetxController {
-  final databaseService = DatabaseService();
-  final isLoading = false.obs;
-  final categorizedIncomes = <CategoryAmount>[].obs;
-  final categorizedExpenses = <CategoryAmount>[].obs;
+class CategoryAnalysisController extends GetxController
+    with GetSingleTickerProviderStateMixin {
+  final DatabaseService databaseService = Get.find<DatabaseService>();
+  final CurrencyService currencyService = CurrencyService();
+
+  late TabController tabController;
+  final RxBool isLoading = true.obs;
+  final RxList<Map<String, dynamic>> incomesByCategory =
+      <Map<String, dynamic>>[].obs;
+  final RxList<Map<String, dynamic>> expensesByCategory =
+      <Map<String, dynamic>>[].obs;
+  final RxDouble usdRate = 0.0.obs;
+  final RxDouble eurRate = 0.0.obs;
+  final RxDouble goldRate = 0.0.obs;
 
   @override
   void onInit() {
     super.onInit();
-    refreshData();
+    tabController = TabController(length: 3, vsync: this);
+    loadData();
   }
 
-  Future<void> refreshData() async {
-    isLoading.value = true;
+  @override
+  void onClose() {
+    tabController.dispose();
+    super.onClose();
+  }
+
+  Future<void> loadData() async {
     try {
-      await loadData();
+      isLoading.value = true;
+      await Future.wait([
+        loadCategoryData(),
+        loadCurrencyData(),
+      ]);
+    } catch (e) {
+      Get.snackbar(
+        'Hata',
+        'Veriler yüklenirken bir hata oluştu',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> loadData() async {
-    final incomes = await databaseService.getIncomes();
-    final expenses = await databaseService.getExpenses();
-
-    // Gelirleri kategorilere göre grupla
-    final incomeMap = <String, double>{};
-    for (final income in incomes) {
-      final category = income['category'] as String;
-      final amount = income['amount'] as double;
-      incomeMap[category] = (incomeMap[category] ?? 0) + amount;
-    }
-
-    // Giderleri kategorilere göre grupla
-    final expenseMap = <String, double>{};
-    for (final expense in expenses) {
-      final category = expense['category'] as String;
-      final amount = expense['amount'] as double;
-      expenseMap[category] = (expenseMap[category] ?? 0) + amount;
-    }
-
-    // Kategorileri listeye dönüştür
-    categorizedIncomes.value = incomeMap.entries
-        .map((e) => CategoryAmount(e.key, e.value))
-        .toList()
-      ..sort((a, b) => b.amount.compareTo(a.amount));
-
-    categorizedExpenses.value = expenseMap.entries
-        .map((e) => CategoryAmount(e.key, e.value))
-        .toList()
-      ..sort((a, b) => b.amount.compareTo(a.amount));
+  Future<void> loadCategoryData() async {
+    final expenses = await databaseService.getExpensesByCategory();
+    final incomes = await databaseService.getIncomesByCategory();
+    expensesByCategory.value = expenses;
+    incomesByCategory.value = incomes;
   }
-}
 
-class CategoryAmount {
-  final String name;
-  final double amount;
+  Future<void> loadCurrencyData() async {
+    try {
+      final currencyRates = await currencyService.getCurrencyRates();
+      final goldPrice = await currencyService.getGoldPrice();
 
-  CategoryAmount(this.name, this.amount);
+      usdRate.value = currencyRates['usd'] ?? 0.0;
+      eurRate.value = currencyRates['eur'] ?? 0.0;
+      goldRate.value = goldPrice;
+    } catch (e) {
+      Get.snackbar(
+        'Hata',
+        'Döviz kurları yüklenirken bir hata oluştu',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
 }

@@ -2,10 +2,11 @@ import 'package:get/get.dart';
 import '../../services/database_service.dart';
 
 class HomeController extends GetxController {
-  final databaseService = DatabaseService();
-  final isLoading = false.obs;
-  final totalIncome = 0.0.obs;
-  final totalExpense = 0.0.obs;
+  final DatabaseService databaseService = Get.find<DatabaseService>();
+
+  final RxDouble totalIncome = 0.0.obs;
+  final RxDouble totalExpense = 0.0.obs;
+  final RxBool isLoading = true.obs;
   final expensesByCategory = <Map<String, dynamic>>[].obs;
   final incomesByCategory = <Map<String, dynamic>>[].obs;
   final selectedCategoryTab = 0.obs;
@@ -30,23 +31,22 @@ class HomeController extends GetxController {
   }
 
   Future<void> loadData() async {
-    if (isLoading.value) return; // Eğer zaten yükleniyorsa tekrar yükleme
-
-    isLoading.value = true;
     try {
+      isLoading.value = true;
+
       // Toplam gelir ve gideri yükle
       final totalIncomeResult = await databaseService.getTotalIncome();
       final totalExpenseResult = await databaseService.getTotalExpense();
 
-      // Kategori bazlı verileri yükle
-      final incomeCategories = await databaseService.getIncomesByCategory();
-      final expenseCategories = await databaseService.getExpensesByCategory();
+      totalIncome.value = totalIncomeResult ?? 0.0;
+      totalExpense.value = totalExpenseResult ?? 0.0;
 
-      // Verileri güncelle
-      totalIncome.value = totalIncomeResult;
-      totalExpense.value = totalExpenseResult;
-      incomesByCategory.value = incomeCategories;
-      expensesByCategory.value = expenseCategories;
+      // Kategori bazlı verileri yükle
+      final expenses = await databaseService.getExpensesByCategory();
+      final incomes = await databaseService.getIncomesByCategory();
+
+      expensesByCategory.value = expenses;
+      incomesByCategory.value = incomes;
     } catch (e) {
       Get.snackbar(
         'Hata',
