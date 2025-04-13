@@ -21,11 +21,7 @@ class ExpensePage extends GetView<ExpenseController> {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
-        return TransactionList(
-          transactions: controller.expenses,
-          isIncome: false,
-          onDelete: (id) => controller.deleteExpense(id),
-        );
+        return const TransactionList();
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () => controller.showAddExpenseDialog(context),

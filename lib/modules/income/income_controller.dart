@@ -40,7 +40,8 @@ class IncomeController extends GetxController {
     try {
       final data = await databaseService.getIncomes();
       incomes.value = data;
-      totalIncome.value = await databaseService.getTotalIncome();
+      final total = await databaseService.getTotalIncome();
+      totalIncome.value = total ?? 0.0;
     } catch (e) {
       Get.snackbar(
         'Hata',
@@ -64,7 +65,7 @@ class IncomeController extends GetxController {
         'date': DateTime.now().toString().split(' ')[0],
       };
 
-      await databaseService.insertIncome(income);
+      await databaseService.addIncome(income);
 
       // Form temizleme
       amountController.clear();
@@ -166,7 +167,7 @@ class IncomeController extends GetxController {
             onPressed: () async {
               if (amountController.text.isNotEmpty &&
                   categoryController.text.isNotEmpty) {
-                await databaseService.insertIncome({
+                await databaseService.addIncome({
                   'amount': double.parse(amountController.text),
                   'description': descriptionController.text,
                   'category': categoryController.text,

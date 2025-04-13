@@ -1,12 +1,13 @@
 import 'package:get/get.dart';
-import '../../services/database_service.dart';
+import 'package:bitirme_projesi_app/services/database_service.dart';
 
 class HomeController extends GetxController {
   final DatabaseService databaseService = Get.find<DatabaseService>();
 
+  final RxBool isLoading = false.obs;
   final RxDouble totalIncome = 0.0.obs;
   final RxDouble totalExpense = 0.0.obs;
-  final RxBool isLoading = true.obs;
+  final RxDouble balance = 0.0.obs;
   final expensesByCategory = <Map<String, dynamic>>[].obs;
   final incomesByCategory = <Map<String, dynamic>>[].obs;
   final selectedCategoryTab = 0.obs;
@@ -14,15 +15,15 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadData();
+    loadTotals();
   }
 
   @override
   void onReady() {
     super.onReady();
     // Gelir veya gider eklendiğinde verileri güncelle
-    ever(totalIncome, (_) => loadData());
-    ever(totalExpense, (_) => loadData());
+    ever(totalIncome, (_) => loadTotals());
+    ever(totalExpense, (_) => loadTotals());
   }
 
   @override
@@ -30,16 +31,16 @@ class HomeController extends GetxController {
     super.onClose();
   }
 
-  Future<void> loadData() async {
+  Future<void> loadTotals() async {
     try {
       isLoading.value = true;
 
-      // Toplam gelir ve gideri yükle
-      final totalIncomeResult = await databaseService.getTotalIncome();
-      final totalExpenseResult = await databaseService.getTotalExpense();
+      final incomeTotal = await databaseService.getTotalIncome();
+      final expenseTotal = await databaseService.getTotalExpense();
 
-      totalIncome.value = totalIncomeResult ?? 0.0;
-      totalExpense.value = totalExpenseResult ?? 0.0;
+      totalIncome.value = incomeTotal ?? 0.0;
+      totalExpense.value = expenseTotal ?? 0.0;
+      balance.value = totalIncome.value - totalExpense.value;
 
       // Kategori bazlı verileri yükle
       final expenses = await databaseService.getExpensesByCategory();
@@ -50,7 +51,7 @@ class HomeController extends GetxController {
     } catch (e) {
       Get.snackbar(
         'Hata',
-        'Veriler yüklenirken bir hata oluştu',
+        'Toplamlar yüklenirken bir hata oluştu',
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -63,10 +64,10 @@ class HomeController extends GetxController {
   }
 
   void onIncomeAdded() {
-    loadData();
+    loadTotals();
   }
 
   void onExpenseAdded() {
-    loadData();
+    loadTotals();
   }
 }

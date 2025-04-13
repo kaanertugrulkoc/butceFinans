@@ -40,7 +40,8 @@ class ExpenseController extends GetxController {
     try {
       final data = await databaseService.getExpenses();
       expenses.value = data;
-      totalExpense.value = await databaseService.getTotalExpense();
+      final total = await databaseService.getTotalExpense();
+      totalExpense.value = total ?? 0.0;
     } finally {
       isLoading.value = false;
     }
@@ -56,7 +57,7 @@ class ExpenseController extends GetxController {
         'date': DateTime.now().toString().split(' ')[0],
       };
 
-      await databaseService.insertExpense(expense);
+      await databaseService.addExpense(expense);
 
       // Form temizleme
       amountController.clear();
@@ -158,7 +159,7 @@ class ExpenseController extends GetxController {
             onPressed: () async {
               if (amountController.text.isNotEmpty &&
                   categoryController.text.isNotEmpty) {
-                await databaseService.insertExpense({
+                await databaseService.addExpense({
                   'amount': double.parse(amountController.text),
                   'description': descriptionController.text,
                   'category': categoryController.text,

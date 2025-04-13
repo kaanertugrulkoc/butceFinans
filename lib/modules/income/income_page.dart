@@ -21,11 +21,7 @@ class IncomePage extends GetView<IncomeController> {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
-        return TransactionList(
-          transactions: controller.incomes,
-          isIncome: true,
-          onDelete: (id) => controller.deleteIncome(id),
-        );
+        return const TransactionList();
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () => controller.showAddIncomeDialog(context),

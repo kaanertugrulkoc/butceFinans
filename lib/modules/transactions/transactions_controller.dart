@@ -10,6 +10,8 @@ class TransactionsController extends GetxController {
       <Map<String, dynamic>>[].obs;
   final RxInt selectedMonth = DateTime.now().month.obs;
   final RxInt selectedYear = DateTime.now().year.obs;
+  final RxDouble totalIncome = 0.0.obs;
+  final RxDouble totalExpense = 0.0.obs;
 
   @override
   void onInit() {
@@ -37,13 +39,26 @@ class TransactionsController extends GetxController {
             }),
       ];
 
-      allTransactions.sort((a, b) {
+      // Filter transactions by selected month and year
+      final filteredTransactions = allTransactions.where((transaction) {
+        final date = DateTime.parse(transaction['date'] as String);
+        return date.month == selectedMonth.value &&
+            date.year == selectedYear.value;
+      }).toList();
+
+      filteredTransactions.sort((a, b) {
         final dateA = DateTime.parse(a['date'] as String);
         final dateB = DateTime.parse(b['date'] as String);
         return dateB.compareTo(dateA);
       });
 
-      transactions.value = allTransactions;
+      transactions.value = filteredTransactions;
+
+      // Update totals
+      final incomeTotal = await databaseService.getTotalIncome();
+      final expenseTotal = await databaseService.getTotalExpense();
+      totalIncome.value = incomeTotal ?? 0.0;
+      totalExpense.value = expenseTotal ?? 0.0;
     } catch (e) {
       Get.snackbar(
         'Hata',
@@ -53,6 +68,16 @@ class TransactionsController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void updateSelectedMonth(int month) {
+    selectedMonth.value = month;
+    loadTransactions();
+  }
+
+  void updateSelectedYear(int year) {
+    selectedYear.value = year;
+    loadTransactions();
   }
 
   Future<void> deleteTransaction(int id, String type) async {
@@ -74,6 +99,47 @@ class TransactionsController extends GetxController {
       Get.snackbar(
         'Hata',
         'İşlem silinirken bir hata oluştu',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  String formatDate(String dateStr) {
+    final date = DateTime.parse(dateStr);
+    return '${date.day}/${date.month}/${date.year}';
+  }
+
+  Future<void> addIncome(Map<String, dynamic> income) async {
+    try {
+      await databaseService.addIncome(income);
+      await loadTransactions();
+      Get.snackbar(
+        'Başarılı',
+        'Gelir başarıyla eklendi',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Hata',
+        'Gelir eklenirken bir hata oluştu',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  Future<void> addExpense(Map<String, dynamic> expense) async {
+    try {
+      await databaseService.addExpense(expense);
+      await loadTransactions();
+      Get.snackbar(
+        'Başarılı',
+        'Gider başarıyla eklendi',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Hata',
+        'Gider eklenirken bir hata oluştu',
         snackPosition: SnackPosition.BOTTOM,
       );
     }

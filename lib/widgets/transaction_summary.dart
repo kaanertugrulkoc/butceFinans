@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/transactions_controller.dart';
+import 'package:bitirme_projesi_app/modules/transactions/transactions_controller.dart';
 
 class TransactionSummary extends StatelessWidget {
   const TransactionSummary({super.key});
@@ -8,6 +8,11 @@ class TransactionSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<TransactionsController>();
+
+    final incomes =
+        controller.transactions.where((t) => t['type'] == 'income').length;
+    final expenses =
+        controller.transactions.where((t) => t['type'] == 'expense').length;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -29,14 +34,14 @@ class TransactionSummary extends StatelessWidget {
                 Expanded(
                   child: _buildSummaryItem(
                     'Gelir Sayısı',
-                    controller.incomes.length.toString(),
+                    incomes.toString(),
                     Colors.green,
                   ),
                 ),
                 Expanded(
                   child: _buildSummaryItem(
                     'Gider Sayısı',
-                    controller.expenses.length.toString(),
+                    expenses.toString(),
                     Colors.red,
                   ),
                 ),

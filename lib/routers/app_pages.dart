@@ -1,3 +1,4 @@
+import 'package:bitirme_projesi_app/modules/home/home_binding.dart';
 import 'package:bitirme_projesi_app/modules/splash/splash_bindings.dart';
 import 'package:bitirme_projesi_app/modules/splash/splash_page.dart';
 import 'package:get/get.dart';

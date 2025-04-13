@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/transactions_controller.dart';
+import 'package:bitirme_projesi_app/modules/transactions/transactions_controller.dart';
 
 class TransactionForm extends StatefulWidget {
-  const TransactionForm({super.key});
+  const TransactionForm({Key? key}) : super(key: key);
 
   @override
   State<TransactionForm> createState() => _TransactionFormState();
@@ -14,49 +14,10 @@ class _TransactionFormState extends State<TransactionForm> {
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _categoryController = TextEditingController();
-  final _transactionsController = Get.find<TransactionsController>();
-
-  bool _isIncome = true;
+  String _selectedType = 'income';
+  DateTime _selectedDate = DateTime.now();
   int _selectedMonth = DateTime.now().month;
   int _selectedYear = DateTime.now().year;
-
-  // Türkçe ay isimleri
-  final List<String> _monthNames = [
-    'Ocak',
-    'Şubat',
-    'Mart',
-    'Nisan',
-    'Mayıs',
-    'Haziran',
-    'Temmuz',
-    'Ağustos',
-    'Eylül',
-    'Ekim',
-    'Kasım',
-    'Aralık'
-  ];
-
-  final List<String> _incomeCategories = [
-    'Maaş',
-    'Yatırım',
-    'Freelance',
-    'Diğer',
-  ];
-
-  final List<String> _expenseCategories = [
-    'Kira',
-    'Faturalar',
-    'Market',
-    'Ulaşım',
-    'Sağlık',
-    'Eğlence',
-    'Diğer',
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -66,15 +27,51 @@ class _TransactionFormState extends State<TransactionForm> {
     super.dispose();
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+        _selectedMonth = picked.month;
+        _selectedYear = picked.year;
+      });
+    }
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      final controller = Get.find<TransactionsController>();
+      final transaction = {
+        'amount': double.parse(_amountController.text),
+        'description': _descriptionController.text,
+        'category': _categoryController.text,
+        'date': _selectedDate.toIso8601String(),
+        'type': _selectedType,
+      };
+
+      if (_selectedType == 'income') {
+        controller.addIncome(transaction);
+      } else {
+        controller.addExpense(transaction);
+      }
+
+      Get.back();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(20),
         ),
       ),
       child: Form(
@@ -83,51 +80,31 @@ class _TransactionFormState extends State<TransactionForm> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Yeni ${_isIncome ? 'Gelir' : 'Gider'} Ekle',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+              'Yeni İşlem Ekle',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _selectedType,
+              items: const [
+                DropdownMenuItem(value: 'income', child: Text('Gelir')),
+                DropdownMenuItem(value: 'expense', child: Text('Gider')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _selectedType = value!;
+                });
+              },
+              decoration: const InputDecoration(
+                labelText: 'İşlem Türü',
+                border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _isIncome = true;
-                      });
-                    },
-                    icon: Icon(Icons.add_circle_outline),
-                    label: Text('Gelir'),
-                    style: TextButton.styleFrom(
-                      backgroundColor: _isIncome ? Colors.green[100] : null,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: TextButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _isIncome = false;
-                      });
-                    },
-                    icon: Icon(Icons.remove_circle_outline),
-                    label: Text('Gider'),
-                    style: TextButton.styleFrom(
-                      backgroundColor: !_isIncome ? Colors.red[100] : null,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _amountController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Tutar',
                 border: OutlineInputBorder(),
               ),
@@ -136,23 +113,29 @@ class _TransactionFormState extends State<TransactionForm> {
                   return 'Lütfen bir tutar girin';
                 }
                 if (double.tryParse(value) == null) {
-                  return 'Lütfen geçerli bir sayı girin';
+                  return 'Lütfen geçerli bir tutar girin';
                 }
                 return null;
               },
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _descriptionController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Açıklama',
                 border: OutlineInputBorder(),
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Lütfen bir açıklama girin';
+                }
+                return null;
+              },
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _categoryController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Kategori',
                 border: OutlineInputBorder(),
               ),
@@ -163,82 +146,19 @@ class _TransactionFormState extends State<TransactionForm> {
                 return null;
               },
             ),
-            SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<int>(
-                    value: _selectedMonth,
-                    decoration: InputDecoration(
-                      labelText: 'Ay',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: List.generate(12, (index) => index + 1)
-                        .map((month) => DropdownMenuItem(
-                              value: month,
-                              child: Text('$month. Ay'),
-                            ))
-                        .toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _selectedMonth = value;
-                        });
-                      }
-                    },
-                  ),
-                ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: DropdownButtonFormField<int>(
-                    value: _selectedYear,
-                    decoration: InputDecoration(
-                      labelText: 'Yıl',
-                      border: OutlineInputBorder(),
-                    ),
-                    items:
-                        List.generate(5, (index) => DateTime.now().year - index)
-                            .map((year) => DropdownMenuItem(
-                                  value: year,
-                                  child: Text('$year'),
-                                ))
-                            .toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _selectedYear = value;
-                        });
-                      }
-                    },
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  final transaction = {
-                    'amount': double.parse(_amountController.text),
-                    'description': _descriptionController.text,
-                    'category': _categoryController.text,
-                    'month': _selectedMonth,
-                    'year': _selectedYear,
-                  };
-
-                  if (_isIncome) {
-                    await _transactionsController.addIncome(transaction);
-                  } else {
-                    await _transactionsController.addExpense(transaction);
-                  }
-
-                  Get.back();
-                }
-              },
-              child: Text('Ekle'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
+            const SizedBox(height: 16),
+            ListTile(
+              title: const Text('Tarih'),
+              subtitle: Text(
+                '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
               ),
+              trailing: const Icon(Icons.calendar_today),
+              onTap: () => _selectDate(context),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _submitForm,
+              child: const Text('Kaydet'),
             ),
           ],
         ),
