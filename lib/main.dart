@@ -8,17 +8,19 @@ import 'services/api_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Servisleri başlat
-  final dbService = await Get.putAsync<DatabaseService>(() async {
-    final service = DatabaseService();
-    return service.init();
+  // DatabaseService'i başlat ve kaydet
+  final dbService = DatabaseService();
+  await Get.putAsync<DatabaseService>(() async {
+    await dbService.initialize();
+    return dbService;
   });
 
+  // Veritabanı yapısını kontrol et
+  await dbService.verifyDatabaseStructure();
+
+  // Diğer servisleri başlat
   await Get.putAsync<StorageService>(() async => StorageService().init());
   await Get.putAsync<ApiService>(() async => ApiService().init());
-
-  // Veritabanı yapısını kontrol et
-  await dbService.checkDatabaseStructure();
 
   runApp(const MyApp());
 }
