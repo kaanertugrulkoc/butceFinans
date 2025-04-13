@@ -12,11 +12,9 @@ void main() async {
   final dbService = DatabaseService();
   await Get.putAsync<DatabaseService>(() async {
     await dbService.initialize();
+    await dbService.verifyDatabaseStructure();
     return dbService;
   });
-
-  // Veritabanı yapısını kontrol et
-  await dbService.verifyDatabaseStructure();
 
   // Diğer servisleri başlat
   await Get.putAsync<StorageService>(() async => StorageService().init());
