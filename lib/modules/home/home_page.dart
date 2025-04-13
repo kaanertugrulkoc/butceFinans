@@ -6,8 +6,27 @@ import 'package:bitirme_projesi_app/modules/expense/expense_page.dart';
 import 'package:bitirme_projesi_app/modules/category_analysis/category_analysis_page.dart';
 import 'home_controller.dart';
 
-class HomePage extends GetView<HomeController> {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  late final HomeController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    // Controller'ı manuel olarak kaydet
+    if (!Get.isRegistered<HomeController>()) {
+      controller = Get.put(HomeController());
+    } else {
+      controller = Get.find<HomeController>();
+    }
+    controller.loadData();
+  }
 
   @override
   Widget build(BuildContext context) {
