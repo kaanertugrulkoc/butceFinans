@@ -17,8 +17,8 @@ class ProfileController extends GetxController {
     try {
       isLoading.value = true;
       // TODO: Profil bilgilerini yükle
-      name.value = 'John Doe';
-      email.value = 'john.doe@example.com';
+      name.value = 'kaanertugrulkoc';
+      email.value = 'kaanertugrulkoc.com';
       phone.value = '+90 555 555 55 55';
       address.value = 'İstanbul, Türkiye';
     } catch (e) {
