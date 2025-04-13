@@ -3,9 +3,13 @@ import 'package:get/get.dart';
 import 'routers/app_pages.dart';
 import 'services/storage_service.dart';
 import 'services/api_service.dart';
+import 'services/database_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // DatabaseService'i başlat ve kaydet (init() metodu olmadan)
+  await Get.putAsync<DatabaseService>(() async => DatabaseService());
 
   // Diğer servisleri başlat
   await Get.putAsync<StorageService>(() async => StorageService().init());
