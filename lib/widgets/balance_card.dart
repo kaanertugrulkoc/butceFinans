@@ -23,14 +23,14 @@ class BalanceCard extends GetView<TransactionsController> {
       return Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
+          child: Row(
             children: [
               Text(
                   'Bakiye: ₺${(totalIncome - totalExpense).toStringAsFixed(2)}'),
               const SizedBox(height: 8),
-              Text('Gelir: ₺$totalIncome',
+              Text(' Gelir: ₺$totalIncome',
                   style: TextStyle(color: Colors.green)),
-              Text('Gider: ₺$totalExpense',
+              Text(' Gider: ₺$totalExpense',
                   style: TextStyle(color: Colors.red)),
             ],
           ),
