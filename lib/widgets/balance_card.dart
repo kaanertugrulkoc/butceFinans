@@ -21,8 +21,8 @@ class BalanceCard extends GetView<TransactionsController> {
             ),
             const SizedBox(height: 8),
             Obx(() {
-              final totalIncome = controller.totalIncome.value;
-              final totalExpense = controller.totalExpense.value;
+              final totalIncome = controller.totalIncome.value ?? 0.0;
+              final totalExpense = controller.totalExpense.value ?? 0.0;
               final balance = totalIncome - totalExpense;
 
               return Text(
