@@ -31,6 +31,7 @@ abstract class AppRouters {
 
 class AppPages {
   static const INITIAL = Routes.HOME;
+  static const HOMEpage = Routes.HOME;
 
   static final List<GetPage> pages = [
     GetPage(
