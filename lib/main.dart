@@ -3,10 +3,17 @@ import 'package:get/get.dart';
 import 'routers/app_pages.dart';
 import 'modules/splash/splash_page.dart';
 import 'services/database_service.dart';
+import 'services/storage_service.dart';
+import 'services/api_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Servisleri başlat
+  await Get.putAsync<StorageService>(() async => StorageService().init());
+  await Get.putAsync<ApiService>(() async => ApiService().init());
   await Get.putAsync<DatabaseService>(() async => DatabaseService());
+
   runApp(const MyApp());
 }
 
@@ -21,7 +28,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: AppPages.INITIAL,
+      initialRoute: AppPages.HOME,
       getPages: AppPages.pages,
     );
   }

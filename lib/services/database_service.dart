@@ -58,7 +58,10 @@ class DatabaseService extends GetxService {
     final db = await database;
     final result =
         await db.rawQuery('SELECT SUM(amount) as total FROM incomes');
-    return result.first['total'] as double?;
+    if (result.isEmpty || result.first['total'] == null) {
+      return 0.0;
+    }
+    return result.first['total'] as double;
   }
 
   Future<List<Map<String, dynamic>>> getIncomesByCategory() async {
@@ -90,7 +93,10 @@ class DatabaseService extends GetxService {
     final db = await database;
     final result =
         await db.rawQuery('SELECT SUM(amount) as total FROM expenses');
-    return result.first['total'] as double?;
+    if (result.isEmpty || result.first['total'] == null) {
+      return 0.0;
+    }
+    return result.first['total'] as double;
   }
 
   Future<List<Map<String, dynamic>>> getExpensesByCategory() async {

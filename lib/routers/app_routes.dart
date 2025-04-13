@@ -7,6 +7,4 @@ abstract class Routes {
   static const EXPENSE = '/expense';
   static const TRANSACTIONS = '/transactions';
   static const CATEGORY_ANALYSIS = '/category_analysis';
-  static const PROFILE = '/profile';
-  static const ABOUT = '/about';
 }
