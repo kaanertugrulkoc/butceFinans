@@ -21,13 +21,16 @@ class BalanceCard extends GetView<TransactionsController> {
             ),
             const SizedBox(height: 8),
             Obx(() {
-              final balance =
-                  controller.totalIncome.value - controller.totalExpense.value;
+              final totalIncome = controller.totalIncome.value;
+              final totalExpense = controller.totalExpense.value;
+              final balance = totalIncome - totalExpense;
+
               return Text(
                 '₺${balance.toStringAsFixed(2)}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
+                  color: balance >= 0 ? Colors.green : Colors.red,
                 ),
               );
             }),
