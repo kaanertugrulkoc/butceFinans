@@ -13,12 +13,6 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('FinansApp'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () => Get.toNamed(Routes.PROFILE),
-          ),
-        ],
       ),
       body: Column(
         children: [
@@ -76,12 +70,6 @@ class HomePage extends StatelessWidget {
                   Icons.analytics,
                   Colors.purple,
                   () => Get.toNamed(Routes.CATEGORY_ANALYSIS),
-                ),
-                _buildMenuCard(
-                  'Hakkında',
-                  Icons.info,
-                  Colors.orange,
-                  () => Get.toNamed(Routes.ABOUT),
                 ),
               ],
             ),

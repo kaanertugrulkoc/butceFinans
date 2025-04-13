@@ -13,12 +13,8 @@ import '../modules/expense/expense_binding.dart';
 import '../modules/expense/expense_page.dart';
 import '../modules/transactions/transactions_binding.dart';
 import '../modules/transactions/transactions_page.dart';
-import '../modules/about/about_page.dart';
-import '../modules/about/about_binding.dart';
 import '../modules/category_analysis/category_analysis_page.dart';
 import '../modules/category_analysis/category_analysis_binding.dart';
-import '../modules/profile/profile_page.dart';
-import '../modules/profile/profile_binding.dart';
 
 part 'app_routes.dart';
 
@@ -27,11 +23,9 @@ abstract class AppRouters {
   static const SPLASH = '/splash';
   static const LOGIN = '/login';
   static const HOME = '/home';
-  static const PROFILE = '/profil';
   static const INCOME = '/income';
   static const EXPENSE = '/expense';
   static const TRANSACTIONS = '/transactions';
-  static const ABOUT = '/about';
   static const CATEGORY_ANALYSIS = '/category_analysis';
 }
 
@@ -63,16 +57,6 @@ class AppPages {
       name: Routes.CATEGORY_ANALYSIS,
       page: () => const CategoryAnalysisPage(),
       binding: CategoryAnalysisBinding(),
-    ),
-    GetPage(
-      name: Routes.PROFILE,
-      page: () => const ProfilePage(),
-      binding: ProfileBinding(),
-    ),
-    GetPage(
-      name: Routes.ABOUT,
-      page: () => const AboutPage(),
-      binding: AboutBinding(),
     ),
   ];
 }

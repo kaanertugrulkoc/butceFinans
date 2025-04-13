@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'routers/app_pages.dart';
-import 'modules/splash/splash_page.dart';
 import 'services/database_service.dart';
 import 'services/storage_service.dart';
 import 'services/api_service.dart';
@@ -28,7 +27,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: AppPages.HOME,
+      initialRoute: AppPages.INITIAL,
       getPages: AppPages.pages,
     );
   }
