@@ -9,9 +9,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Servisleri başlat
+  final dbService = await Get.putAsync<DatabaseService>(() async {
+    final service = DatabaseService();
+    return service.init();
+  });
+
   await Get.putAsync<StorageService>(() async => StorageService().init());
   await Get.putAsync<ApiService>(() async => ApiService().init());
-  await Get.putAsync<DatabaseService>(() async => DatabaseService());
+
+  // Veritabanı yapısını kontrol et
+  await dbService.checkDatabaseStructure();
 
   runApp(const MyApp());
 }
@@ -27,7 +34,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: AppPages.HOMEpage,
+      initialRoute: AppPages.INITIAL,
       getPages: AppPages.pages,
     );
   }
