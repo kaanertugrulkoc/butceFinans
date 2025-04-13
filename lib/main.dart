@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'routers/app_pages.dart';
 import 'modules/splash/splash_page.dart';
+import 'services/database_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Get.putAsync<DatabaseService>(() async => DatabaseService());
   runApp(const MyApp());
 }
 
