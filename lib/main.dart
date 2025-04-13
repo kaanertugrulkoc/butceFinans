@@ -1,20 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'routers/app_pages.dart';
-import 'services/database_service.dart';
 import 'services/storage_service.dart';
 import 'services/api_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // DatabaseService'i başlat ve kaydet
-  final dbService = DatabaseService();
-  await Get.putAsync<DatabaseService>(() async {
-    await dbService.initialize();
-    await dbService.verifyDatabaseStructure();
-    return dbService;
-  });
 
   // Diğer servisleri başlat
   await Get.putAsync<StorageService>(() async => StorageService().init());
