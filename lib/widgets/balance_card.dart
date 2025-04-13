@@ -5,13 +5,20 @@ import 'package:bitirme_projesi_app/modules/transactions/transactions_controller
 class BalanceCard extends GetView<TransactionsController> {
   const BalanceCard({Key? key}) : super(key: key);
 
+  TransactionsController get _controller {
+    try {
+      return Get.find<TransactionsController>();
+    } catch (e) {
+      Get.put(TransactionsController(), permanent: true);
+      return Get.find<TransactionsController>();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<TransactionsController>(tag: 'transactions');
-
     return Obx(() {
-      final totalIncome = controller.totalIncome?.value ?? 0.0;
-      final totalExpense = controller.totalExpense?.value ?? 0.0;
+      final totalIncome = _controller.totalIncome.value;
+      final totalExpense = _controller.totalExpense.value;
 
       return Card(
         child: Padding(
