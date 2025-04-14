@@ -240,9 +240,9 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Ad: John Doe', style: TextStyle(fontSize: 20)),
+            Text('Ad: kaanerugrulkoc', style: TextStyle(fontSize: 20)),
             SizedBox(height: 8),
-            Text('E-posta: johndoe@example.com',
+            Text('E-posta: info@kaanerugrulkoc.com',
                 style: TextStyle(fontSize: 20)),
             SizedBox(height: 8),
             Text('Hakkımda:', style: TextStyle(fontSize: 20)),
