@@ -5,6 +5,8 @@ import 'services/storage_service.dart';
 import 'services/api_service.dart';
 import 'services/database_service.dart';
 import 'services/currency_service.dart';
+import 'pages/profile_page.dart';
+import 'pages/about_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -137,6 +139,12 @@ Widget _buildQuickActionsRow() {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        _buildQuickActionButton(Icons.person, 'Profil', Colors.blue, () {
+          Get.toNamed(Routes.PROFILE);
+        }),
+        _buildQuickActionButton(Icons.info, 'Hakkımda', Colors.green, () {
+          Get.toNamed(Routes.ABOUT);
+        }),
         _buildQuickActionButton(Icons.add, 'Gelirler', Colors.green, () {
           Get.to(IncomePage());
         }),
@@ -177,6 +185,8 @@ class AppPages {
     GetPage(name: Routes.HOME, page: () => HomePage()),
     GetPage(name: Routes.INCOME, page: () => IncomePage()),
     GetPage(name: Routes.EXPENSE, page: () => ExpensePage()),
+    GetPage(name: Routes.PROFILE, page: () => ProfilePage()),
+    GetPage(name: Routes.ABOUT, page: () => AboutPage()),
   ];
 
   static List<GetPage> get pages => routes;
@@ -186,6 +196,8 @@ abstract class Routes {
   static const HOME = '/home';
   static const INCOME = '/income';
   static const EXPENSE = '/expense';
+  static const PROFILE = '/profile';
+  static const ABOUT = '/about';
 }
 
 class Income {
@@ -211,6 +223,60 @@ class HomePage extends StatelessWidget {
       ),
       body: Center(
         child: Text('Hoş geldiniz!'),
+      ),
+    );
+  }
+}
+
+class ProfilePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Profilim'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Ad: John Doe', style: TextStyle(fontSize: 20)),
+            SizedBox(height: 8),
+            Text('E-posta: johndoe@example.com',
+                style: TextStyle(fontSize: 20)),
+            SizedBox(height: 8),
+            Text('Hakkımda:', style: TextStyle(fontSize: 20)),
+            SizedBox(height: 4),
+            Text(
+                'Finansal yönetim konusunda uzmanım. Gelir ve gider takibi yaparak bütçemi yönetiyorum.',
+                style: TextStyle(fontSize: 16)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AboutPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Hakkında'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Uygulama Hakkında',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            SizedBox(height: 16),
+            Text(
+                'Bu uygulama, kullanıcıların gelir ve giderlerini takip etmelerine yardımcı olmak için tasarlanmıştır. Kullanıcı dostu arayüzü ile finansal durumunuzu kolayca yönetebilirsiniz.',
+                style: TextStyle(fontSize: 16)),
+          ],
+        ),
       ),
     );
   }
