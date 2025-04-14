@@ -4,7 +4,6 @@ import 'routers/app_pages.dart';
 import 'services/storage_service.dart';
 import 'services/api_service.dart';
 import 'services/database_service.dart';
-
 import 'services/currency_service.dart';
 
 void main() async {
