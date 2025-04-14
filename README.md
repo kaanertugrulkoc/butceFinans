@@ -1,4 +1,4 @@
-# Bitirme Projesi
+# Bitirme Projesi Tamamlandı !!!
 
 # Çok Yakında playstore'da Yayında...
 
