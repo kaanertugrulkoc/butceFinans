@@ -169,3 +169,17 @@ abstract class Routes {
   static const INCOME = '/income';
   static const EXPENSE = '/expense';
 }
+
+class Income {
+  final String description;
+  final double amount;
+
+  Income({required this.description, required this.amount});
+}
+
+class Expense {
+  final String description;
+  final double amount;
+
+  Expense({required this.description, required this.amount});
+}
