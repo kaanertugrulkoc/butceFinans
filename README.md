@@ -1,5 +1,4 @@
-# Bitirme Projesi
-
+# Bitirme Projesi Tamamlandı !!!
 # Çok Yakında playstore'da Yayında...
 
 Gelir-Gider Tablosu (Bilanço)
