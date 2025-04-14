@@ -5,12 +5,6 @@ import 'services/storage_service.dart';
 import 'services/api_service.dart';
 import 'services/database_service.dart';
 import 'services/currency_service.dart';
-import '../controllers/income_controller.dart';
-import '../controllers/expense_controller.dart';
-import '../models/income.dart';
-import '../models/expense.dart';
-import 'pages/income_page.dart';
-import 'pages/expense_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,7 +33,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: AppPages.INITIAL,
+      initialRoute: AppPages.HOME,
       getPages: AppPages.pages,
     );
   }
@@ -154,6 +148,28 @@ Widget _buildQuickActionsRow() {
   );
 }
 
+Widget _buildQuickActionButton(
+    IconData icon, String label, Color color, VoidCallback onTap) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 30),
+          SizedBox(height: 4),
+          Text(label, style: TextStyle(color: color)),
+        ],
+      ),
+    ),
+  );
+}
+
 class AppPages {
   static const INITIAL = Routes.HOME;
 
@@ -162,6 +178,8 @@ class AppPages {
     GetPage(name: Routes.INCOME, page: () => IncomePage()),
     GetPage(name: Routes.EXPENSE, page: () => ExpensePage()),
   ];
+
+  static List<GetPage> get pages => routes;
 }
 
 abstract class Routes {
@@ -182,4 +200,18 @@ class Expense {
   final double amount;
 
   Expense({required this.description, required this.amount});
+}
+
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Ana Sayfa'),
+      ),
+      body: Center(
+        child: Text('Hoş geldiniz!'),
+      ),
+    );
+  }
 }
