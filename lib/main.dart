@@ -82,7 +82,7 @@ class ExpensePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Giderler'),
+        title: Text('Giderler '),
       ),
       body: Obx(() {
         if (controller.expenses.isEmpty) {
