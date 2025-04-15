@@ -86,7 +86,7 @@ class ExpensePage extends StatelessWidget {
       ),
       body: Obx(() {
         if (controller.expenses.isEmpty) {
-          return Center(child: Text('Henüz gider yok.'));
+          return Center(child: Text('Henüz gider yok. '));
         }
         return ListView.builder(
           itemCount: controller.expenses.length,
