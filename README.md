@@ -1,7 +1,5 @@
 # Bitirme Projesi Tamamlandı !!!
 
-# Çok Yakında playstore'da Yayında...
-
 Gelir-Gider Tablosu (Bilanço)
 Ev ekonomisini analiz edip takip edebileceğiniz bir gelir-gider bilanço uygulaması.
 
